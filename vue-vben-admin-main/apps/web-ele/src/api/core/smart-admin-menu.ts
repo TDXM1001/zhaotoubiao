@@ -3,6 +3,7 @@ import type { RouteRecordStringComponent } from '@vben/types';
 type SmartAdminFlag = boolean | number | null | undefined;
 
 interface SmartAdminMenuItem {
+  activeMenuPath?: string;
   apiPerms?: null | string;
   cacheFlag?: SmartAdminFlag;
   children?: SmartAdminMenuItem[];
@@ -17,6 +18,7 @@ interface SmartAdminMenuItem {
   parentId: number | string;
   path?: null | string;
   sort?: null | number;
+  routeParentId?: number | string;
   visibleFlag?: SmartAdminFlag;
   webPerms?: null | string;
 }
@@ -92,15 +94,32 @@ function buildMenuTree(menuList: SmartAdminMenuItem[]) {
   const normalizedMenuList = sortSmartAdminMenus(
     menuList.filter((menu) => !isEnabledFlag(menu.disabledFlag)),
   ).map((menu) => ({ ...menu, children: [] as SmartAdminMenuItem[] }));
+  const menuMap = new Map(
+    normalizedMenuList.map((menu) => [String(menu.menuId), menu]),
+  );
   const menuIdSet = new Set(
     normalizedMenuList.map((menu) => String(menu.menuId)),
   );
   const roots: SmartAdminMenuItem[] = [];
 
   for (const menu of normalizedMenuList) {
-    const siblingList = groupedChildren.get(String(menu.parentId)) ?? [];
+    const parentMenu = menuMap.get(String(menu.parentId));
+    const shouldFlattenHiddenPage =
+      menu.menuType === 2 &&
+      !isEnabledFlag(menu.visibleFlag, true) &&
+      parentMenu?.menuType === 2 &&
+      Number(parentMenu.parentId) !== 0;
+
+    menu.routeParentId = shouldFlattenHiddenPage
+      ? parentMenu.parentId
+      : menu.parentId;
+    menu.activeMenuPath = shouldFlattenHiddenPage
+      ? getMenuRoutePath(parentMenu)
+      : undefined;
+
+    const siblingList = groupedChildren.get(String(menu.routeParentId)) ?? [];
     siblingList.push(menu);
-    groupedChildren.set(String(menu.parentId), siblingList);
+    groupedChildren.set(String(menu.routeParentId), siblingList);
   }
 
   for (const menu of normalizedMenuList) {
@@ -109,7 +128,8 @@ function buildMenuTree(menuList: SmartAdminMenuItem[]) {
     );
 
     const hasParent =
-      Number(menu.parentId) !== 0 && menuIdSet.has(String(menu.parentId));
+      Number(menu.routeParentId ?? menu.parentId) !== 0 &&
+      menuIdSet.has(String(menu.routeParentId ?? menu.parentId));
     if (!hasParent) {
       roots.push(menu);
     }
@@ -210,8 +230,13 @@ function convertMenuToRoute(
     path: getMenuRoutePath(menu),
   };
 
-  if (!isEnabledFlag(menu.visibleFlag, true) && parentMenu?.path) {
-    meta.activePath = getMenuRoutePath(parentMenu);
+  if (!isEnabledFlag(menu.visibleFlag, true)) {
+    const activePath = menu.activeMenuPath || (parentMenu?.path
+      ? getMenuRoutePath(parentMenu)
+      : undefined);
+    if (activePath) {
+      meta.activePath = activePath;
+    }
   }
 
   if (childRoutes.length > 0) {

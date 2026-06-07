@@ -154,4 +154,66 @@ describe('buildSmartAdminRoutes', () => {
       path: '/docs',
     });
   });
+
+  it('flattens hidden form pages so they do not render inside list pages', () => {
+    const routes = buildSmartAdminRoutes(
+      [
+        {
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 100,
+          menuName: '招投标管理',
+          menuType: 1,
+          parentId: 0,
+          sort: 1,
+          visibleFlag: true,
+        },
+        {
+          component: '/system/bid/project/project-list.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 101,
+          menuName: '招标项目',
+          menuType: 2,
+          parentId: 100,
+          path: '/system/bid/project/list',
+          sort: 1,
+          visibleFlag: true,
+        },
+        {
+          component: '/system/bid/project/project-form.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 102,
+          menuName: '招标项目新增',
+          menuType: 2,
+          parentId: 101,
+          path: '/system/bid/project/create',
+          sort: 11,
+          visibleFlag: false,
+        },
+      ],
+      new Set([
+        '/system/bid/project/project-list.vue',
+        '/system/bid/project/project-form.vue',
+      ]),
+    );
+
+    expect(routes).toHaveLength(1);
+    expect(routes[0]?.children).toHaveLength(2);
+    expect(routes[0]?.children?.[0]).toMatchObject({
+      component: '/system/bid/project/project-list.vue',
+      path: '/system/bid/project/list',
+    });
+    expect(routes[0]?.children?.[0]?.children).toBeUndefined();
+    expect(routes[0]?.children?.[1]).toMatchObject({
+      component: '/system/bid/project/project-form.vue',
+      meta: {
+        activePath: '/system/bid/project/list',
+        hideInMenu: true,
+        title: '招标项目新增',
+      },
+      path: '/system/bid/project/create',
+    });
+  });
 });
