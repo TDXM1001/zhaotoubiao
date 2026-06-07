@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.system.bid.project.dao.BidProjectDao">
+
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.system.bid.project.domain.vo.BidProjectVO">
+        SELECT p.project_id,
+               p.project_code,
+               p.project_name,
+               p.project_type,
+               p.procurement_mode,
+               p.owner_org_id,
+               owner_department.department_name AS owner_org_name,
+               p.agent_org_id,
+               agent_department.department_name AS agent_org_name,
+               p.manager_employee_id,
+               manager_employee.actual_name AS manager_employee_name,
+               p.status,
+               p.budget_amount,
+               p.publish_time,
+               p.archive_time,
+               p.remark,
+               p.version,
+               p.create_time,
+               p.update_time,
+               IFNULL(lot_summary.lot_count, 0) AS lot_count
+        FROM t_bid_project p
+        LEFT JOIN t_department owner_department ON owner_department.department_id = p.owner_org_id
+        LEFT JOIN t_department agent_department ON agent_department.department_id = p.agent_org_id
+        LEFT JOIN t_employee manager_employee ON manager_employee.employee_id = p.manager_employee_id
+        LEFT JOIN (
+            SELECT project_id, COUNT(1) AS lot_count
+            FROM t_bid_lot
+            WHERE deleted_flag = 0
+            GROUP BY project_id
+        ) lot_summary ON lot_summary.project_id = p.project_id
+        <where>
+            p.deleted_flag = #{queryForm.deletedFlag}
+            <if test="queryForm.keyword != null and queryForm.keyword != ''">
+                AND (
+                    p.project_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR p.project_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                )
+            </if>
+            <if test="queryForm.projectType != null and queryForm.projectType != ''">
+                AND p.project_type = #{queryForm.projectType}
+            </if>
+            <if test="queryForm.procurementMode != null and queryForm.procurementMode != ''">
+                AND p.procurement_mode = #{queryForm.procurementMode}
+            </if>
+            <if test="queryForm.status != null and queryForm.status != ''">
+                AND p.status = #{queryForm.status}
+            </if>
+            <if test="queryForm.ownerOrgId != null">
+                AND p.owner_org_id = #{queryForm.ownerOrgId}
+            </if>
+        </where>
+        ORDER BY p.project_id DESC
+    </select>
+
+    <select id="getDetail" resultType="net.lab1024.sa.admin.module.system.bid.project.domain.vo.BidProjectVO">
+        SELECT p.project_id,
+               p.project_code,
+               p.project_name,
+               p.project_type,
+               p.procurement_mode,
+               p.owner_org_id,
+               owner_department.department_name AS owner_org_name,
+               p.agent_org_id,
+               agent_department.department_name AS agent_org_name,
+               p.manager_employee_id,
+               manager_employee.actual_name AS manager_employee_name,
+               p.status,
+               p.budget_amount,
+               p.publish_time,
+               p.archive_time,
+               p.remark,
+               p.version,
+               p.create_time,
+               p.update_time,
+               IFNULL(lot_summary.lot_count, 0) AS lot_count
+        FROM t_bid_project p
+        LEFT JOIN t_department owner_department ON owner_department.department_id = p.owner_org_id
+        LEFT JOIN t_department agent_department ON agent_department.department_id = p.agent_org_id
+        LEFT JOIN t_employee manager_employee ON manager_employee.employee_id = p.manager_employee_id
+        LEFT JOIN (
+            SELECT project_id, COUNT(1) AS lot_count
+            FROM t_bid_lot
+            WHERE deleted_flag = 0
+            GROUP BY project_id
+        ) lot_summary ON lot_summary.project_id = p.project_id
+        WHERE p.project_id = #{projectId}
+          AND p.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="queryList" resultType="net.lab1024.sa.admin.module.system.bid.project.domain.vo.BidProjectOptionVO">
+        SELECT project_id,
+               project_code,
+               project_name,
+               status
+        FROM t_bid_project
+        WHERE deleted_flag = 0
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        ORDER BY project_id DESC
+    </select>
+
+    <select id="countValidLotByProjectId" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM t_bid_lot
+        WHERE project_id = #{projectId}
+          AND deleted_flag = 0
+          AND status != 'VOIDED'
+    </select>
+
+    <update id="updateWithVersion">
+        UPDATE t_bid_project
+        <set>
+            <if test="projectCode != null">project_code = #{projectCode},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="projectType != null">project_type = #{projectType},</if>
+            <if test="procurementMode != null">procurement_mode = #{procurementMode},</if>
+            <if test="ownerOrgId != null">owner_org_id = #{ownerOrgId},</if>
+            <if test="agentOrgId != null">agent_org_id = #{agentOrgId},</if>
+            <if test="managerEmployeeId != null">manager_employee_id = #{managerEmployeeId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="budgetAmount != null">budget_amount = #{budgetAmount},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="archiveTime != null">archive_time = #{archiveTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            version = version + 1
+        </set>
+        WHERE project_id = #{projectId}
+          AND version = #{version}
+          AND deleted_flag = 0
+    </update>
+</mapper>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.system.bid.lot.dao.BidLotDao">
+
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.system.bid.lot.domain.vo.BidLotVO">
+        SELECT l.lot_id,
+               l.project_id,
+               p.project_name,
+               l.lot_code,
+               l.lot_name,
+               l.lot_no,
+               l.lot_scope,
+               l.status,
+               l.budget_amount,
+               l.bid_start_time,
+               l.bid_end_time,
+               l.opening_time,
+               l.evaluation_mode,
+               l.award_mode,
+               l.remark,
+               l.version,
+               l.create_time,
+               l.update_time
+        FROM t_bid_lot l
+        INNER JOIN t_bid_project p ON p.project_id = l.project_id
+        <where>
+            l.deleted_flag = #{queryForm.deletedFlag}
+            AND p.deleted_flag = 0
+            <if test="queryForm.keyword != null and queryForm.keyword != ''">
+                AND (
+                    l.lot_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR p.project_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                )
+            </if>
+            <if test="queryForm.projectId != null">
+                AND l.project_id = #{queryForm.projectId}
+            </if>
+            <if test="queryForm.status != null and queryForm.status != ''">
+                AND l.status = #{queryForm.status}
+            </if>
+        </where>
+        ORDER BY l.project_id DESC, l.lot_no ASC, l.lot_id DESC
+    </select>
+
+    <select id="getDetail" resultType="net.lab1024.sa.admin.module.system.bid.lot.domain.vo.BidLotVO">
+        SELECT l.lot_id,
+               l.project_id,
+               p.project_name,
+               l.lot_code,
+               l.lot_name,
+               l.lot_no,
+               l.lot_scope,
+               l.status,
+               l.budget_amount,
+               l.bid_start_time,
+               l.bid_end_time,
+               l.opening_time,
+               l.evaluation_mode,
+               l.award_mode,
+               l.remark,
+               l.version,
+               l.create_time,
+               l.update_time
+        FROM t_bid_lot l
+        INNER JOIN t_bid_project p ON p.project_id = l.project_id
+        WHERE l.lot_id = #{lotId}
+          AND l.deleted_flag = 0
+          AND p.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="queryByProjectId" resultType="net.lab1024.sa.admin.module.system.bid.lot.domain.vo.BidLotVO">
+        SELECT l.lot_id,
+               l.project_id,
+               p.project_name,
+               l.lot_code,
+               l.lot_name,
+               l.lot_no,
+               l.lot_scope,
+               l.status,
+               l.budget_amount,
+               l.bid_start_time,
+               l.bid_end_time,
+               l.opening_time,
+               l.evaluation_mode,
+               l.award_mode,
+               l.remark,
+               l.version,
+               l.create_time,
+               l.update_time
+        FROM t_bid_lot l
+        INNER JOIN t_bid_project p ON p.project_id = l.project_id
+        WHERE l.project_id = #{projectId}
+          AND l.deleted_flag = 0
+          AND p.deleted_flag = 0
+        ORDER BY l.lot_no ASC, l.lot_id DESC
+    </select>
+
+    <update id="updateWithVersion">
+        UPDATE t_bid_lot
+        <set>
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="lotCode != null">lot_code = #{lotCode},</if>
+            <if test="lotName != null">lot_name = #{lotName},</if>
+            <if test="lotNo != null">lot_no = #{lotNo},</if>
+            <if test="lotScope != null">lot_scope = #{lotScope},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="budgetAmount != null">budget_amount = #{budgetAmount},</if>
+            <if test="bidStartTime != null">bid_start_time = #{bidStartTime},</if>
+            <if test="bidEndTime != null">bid_end_time = #{bidEndTime},</if>
+            <if test="openingTime != null">opening_time = #{openingTime},</if>
+            <if test="evaluationMode != null">evaluation_mode = #{evaluationMode},</if>
+            <if test="awardMode != null">award_mode = #{awardMode},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            version = version + 1
+        </set>
+        WHERE lot_id = #{lotId}
+          AND version = #{version}
+          AND deleted_flag = 0
+    </update>
+
+    <update id="publishLotsByProjectId">
+        UPDATE t_bid_lot
+        SET status = #{toStatus},
+            update_user_id = #{updateUserId},
+            update_time = NOW(),
+            version = version + 1
+        WHERE project_id = #{projectId}
+          AND deleted_flag = 0
+          AND status = #{fromStatus}
+    </update>
+</mapper>

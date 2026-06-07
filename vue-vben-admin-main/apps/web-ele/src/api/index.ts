@@ -14,6 +14,7 @@ export * from './support/operate-log';
 export * from './support/protect';
 export * from './support/reload';
 export * from './system/department';
+export * from './system/bid';
 export * from './system/employee';
 export * from './system/menu';
 export * from './system/position';

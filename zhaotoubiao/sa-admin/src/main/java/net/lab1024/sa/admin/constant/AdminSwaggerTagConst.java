@@ -53,6 +53,10 @@ public class AdminSwaggerTagConst extends SwaggerTagConst {
 
         public static final String SYSTEM_MESSAGE = "系统-消息";
 
+        public static final String SYSTEM_BID_PROJECT = "系统-招投标-项目管理";
+
+        public static final String SYSTEM_BID_LOT = "系统-招投标-标段管理";
+
     }
 
 
