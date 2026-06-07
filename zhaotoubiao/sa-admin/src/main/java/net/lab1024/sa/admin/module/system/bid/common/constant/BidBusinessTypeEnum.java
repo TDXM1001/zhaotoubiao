@@ -9,7 +9,8 @@ package net.lab1024.sa.admin.module.system.bid.common.constant;
 public enum BidBusinessTypeEnum {
 
     PROJECT("PROJECT"),
-    LOT("LOT");
+    LOT("LOT"),
+    REGISTRATION("REGISTRATION");
 
     private final String code;
 

@@ -57,6 +57,8 @@ public class AdminSwaggerTagConst extends SwaggerTagConst {
 
         public static final String SYSTEM_BID_LOT = "系统-招投标-标段管理";
 
+        public static final String SYSTEM_BID_REGISTRATION = "系统-招投标-报名管理";
+
     }
 
 

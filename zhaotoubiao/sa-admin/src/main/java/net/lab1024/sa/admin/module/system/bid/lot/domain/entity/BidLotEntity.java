@@ -35,6 +35,10 @@ public class BidLotEntity {
 
     private BigDecimal budgetAmount;
 
+    private LocalDateTime registrationStartTime;
+
+    private LocalDateTime registrationEndTime;
+
     private LocalDateTime bidStartTime;
 
     private LocalDateTime bidEndTime;

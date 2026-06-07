@@ -12,6 +12,8 @@
                l.lot_scope,
                l.status,
                l.budget_amount,
+               l.registration_start_time,
+               l.registration_end_time,
                l.bid_start_time,
                l.bid_end_time,
                l.opening_time,
@@ -53,6 +55,8 @@
                l.lot_scope,
                l.status,
                l.budget_amount,
+               l.registration_start_time,
+               l.registration_end_time,
                l.bid_start_time,
                l.bid_end_time,
                l.opening_time,
@@ -80,6 +84,8 @@
                l.lot_scope,
                l.status,
                l.budget_amount,
+               l.registration_start_time,
+               l.registration_end_time,
                l.bid_start_time,
                l.bid_end_time,
                l.opening_time,
@@ -107,6 +113,8 @@
             <if test="lotScope != null">lot_scope = #{lotScope},</if>
             <if test="status != null">status = #{status},</if>
             <if test="budgetAmount != null">budget_amount = #{budgetAmount},</if>
+            <if test="registrationStartTime != null">registration_start_time = #{registrationStartTime},</if>
+            <if test="registrationEndTime != null">registration_end_time = #{registrationEndTime},</if>
             <if test="bidStartTime != null">bid_start_time = #{bidStartTime},</if>
             <if test="bidEndTime != null">bid_end_time = #{bidEndTime},</if>
             <if test="openingTime != null">opening_time = #{openingTime},</if>

@@ -118,6 +118,8 @@ export namespace SystemBidLotApi {
     openingTime?: string;
     projectId: number;
     projectName?: string;
+    registrationEndTime?: string;
+    registrationStartTime?: string;
     remark?: string;
     status: string;
     updateTime?: string;
@@ -137,6 +139,8 @@ export namespace SystemBidLotApi {
     lotScope?: string;
     openingTime?: string;
     projectId: number;
+    registrationEndTime?: string;
+    registrationStartTime?: string;
     remark?: string;
   }
 
@@ -144,6 +148,72 @@ export namespace SystemBidLotApi {
   export interface LotUpdateParams extends LotAddParams {
     lotId: number;
     version: number;
+  }
+}
+
+export namespace SystemBidRegistrationApi {
+  /** 报名分页查询参数 */
+  export interface RegistrationQueryParams {
+    keyword?: string;
+    lotId?: number;
+    pageNum: number;
+    pageSize: number;
+    projectId?: number;
+    registrationType?: string;
+    searchCount?: boolean;
+    status?: string;
+  }
+
+  /** 报名审核动作参数 */
+  export interface RegistrationActionParams {
+    registrationId: number;
+    remark?: string;
+    version: number;
+  }
+
+  /** 报名列表项 */
+  export interface RegistrationItem {
+    allowedActions?: string[];
+    cancelReason?: string;
+    cancelTime?: string;
+    contactEmail?: string;
+    contactName: string;
+    contactPhone: string;
+    createTime?: string;
+    lotCode?: string;
+    lotId: number;
+    lotName?: string;
+    projectCode?: string;
+    projectId: number;
+    projectName?: string;
+    qualifiedBy?: null | number;
+    qualifiedResult?: string;
+    qualifiedTime?: string;
+    registrationId: number;
+    registrationType: string;
+    rejectReason?: string;
+    remark?: string;
+    status: string;
+    submitTime?: string;
+    supplierCreditCode: string;
+    supplierEnterpriseId?: null | number;
+    supplierNameSnapshot: string;
+    updateTime?: string;
+    version: number;
+  }
+
+  /** 报名新增参数 */
+  export interface RegistrationAddParams {
+    contactEmail?: string;
+    contactName?: string;
+    contactPhone?: string;
+    lotId: number;
+    projectId: number;
+    registrationType: string;
+    remark?: string;
+    supplierCreditCode: string;
+    supplierEnterpriseId?: null | number;
+    supplierNameSnapshot: string;
   }
 }
 
@@ -245,4 +315,50 @@ export async function closeBidLotApi(data: SystemBidLotApi.LotActionParams) {
 /** 废止标段 */
 export async function voidBidLotApi(data: SystemBidLotApi.LotActionParams) {
   return requestClient.post<string>('/bid/lot/void', data);
+}
+
+/** 查询供应商报名分页 */
+export async function queryBidRegistrationPageApi(
+  data: SystemBidRegistrationApi.RegistrationQueryParams,
+) {
+  return requestClient.post<
+    SystemBidProjectApi.PageResult<SystemBidRegistrationApi.RegistrationItem>
+  >('/bid/registration/queryPage', data);
+}
+
+/** 查询供应商报名详情 */
+export async function getBidRegistrationDetailApi(
+  registrationId: number | string,
+) {
+  return requestClient.get<SystemBidRegistrationApi.RegistrationItem>(
+    `/bid/registration/get/${registrationId}`,
+  );
+}
+
+/** 新增供应商报名 */
+export async function addBidRegistrationApi(
+  data: SystemBidRegistrationApi.RegistrationAddParams,
+) {
+  return requestClient.post<string>('/bid/registration/add', data);
+}
+
+/** 审核通过供应商报名 */
+export async function approveBidRegistrationApi(
+  data: SystemBidRegistrationApi.RegistrationActionParams,
+) {
+  return requestClient.post<string>('/bid/registration/approve', data);
+}
+
+/** 驳回供应商报名 */
+export async function rejectBidRegistrationApi(
+  data: SystemBidRegistrationApi.RegistrationActionParams,
+) {
+  return requestClient.post<string>('/bid/registration/reject', data);
+}
+
+/** 取消供应商报名 */
+export async function cancelBidRegistrationApi(
+  data: SystemBidRegistrationApi.RegistrationActionParams,
+) {
+  return requestClient.post<string>('/bid/registration/cancel', data);
 }

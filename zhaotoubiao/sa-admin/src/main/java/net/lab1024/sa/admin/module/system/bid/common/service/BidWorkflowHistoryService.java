@@ -49,6 +49,21 @@ public class BidWorkflowHistoryService {
         this.record(BidBusinessTypeEnum.LOT, lotId, projectId, lotId, fromStatus, toStatus, actionCode, operateComment, requestUser, snapshot);
     }
 
+    /**
+     * 记录报名动作
+     */
+    public void recordRegistrationAction(Long registrationId,
+                                         Long projectId,
+                                         Long lotId,
+                                         String fromStatus,
+                                         String toStatus,
+                                         String actionCode,
+                                         String operateComment,
+                                         RequestUser requestUser,
+                                         Object snapshot) {
+        this.record(BidBusinessTypeEnum.REGISTRATION, registrationId, projectId, lotId, fromStatus, toStatus, actionCode, operateComment, requestUser, snapshot);
+    }
+
     private void record(BidBusinessTypeEnum businessType,
                         Long businessId,
                         Long projectId,

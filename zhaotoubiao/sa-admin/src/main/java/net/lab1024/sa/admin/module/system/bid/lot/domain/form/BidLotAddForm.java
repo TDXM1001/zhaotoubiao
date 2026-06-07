@@ -39,6 +39,12 @@ public class BidLotAddForm {
     @Schema(description = "标段预算金额")
     private BigDecimal budgetAmount;
 
+    @Schema(description = "报名开始时间")
+    private LocalDateTime registrationStartTime;
+
+    @Schema(description = "报名截止时间")
+    private LocalDateTime registrationEndTime;
+
     @Schema(description = "投标开始时间")
     private LocalDateTime bidStartTime;
 

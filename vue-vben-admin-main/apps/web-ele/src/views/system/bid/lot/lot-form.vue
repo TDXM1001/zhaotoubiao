@@ -87,6 +87,8 @@ const formModel = reactive<SystemBidLotApi.LotAddParams>({
   lotScope: '',
   openingTime: '',
   projectId: defaultProjectId.value ?? (undefined as unknown as number),
+  registrationEndTime: '',
+  registrationStartTime: '',
   remark: '',
 });
 
@@ -129,6 +131,8 @@ async function loadDetail() {
     formModel.lotScope = detail.lotScope || '';
     formModel.openingTime = detail.openingTime || '';
     formModel.projectId = detail.projectId;
+    formModel.registrationEndTime = detail.registrationEndTime || '';
+    formModel.registrationStartTime = detail.registrationStartTime || '';
     formModel.remark = detail.remark || '';
   } finally {
     loading.value = false;
@@ -153,6 +157,8 @@ async function submit() {
     lotScope: formModel.lotScope?.trim() || undefined,
     openingTime: formModel.openingTime || undefined,
     projectId: formModel.projectId,
+    registrationEndTime: formModel.registrationEndTime || undefined,
+    registrationStartTime: formModel.registrationStartTime || undefined,
     remark: formModel.remark?.trim() || undefined,
   };
 
@@ -312,6 +318,31 @@ onMounted(async () => {
                 :min="0"
                 :precision="2"
                 style="width: 100%"
+              />
+            </ElFormItem>
+          </ElCol>
+          <ElCol :span="12">
+            <ElFormItem label="报名开始时间">
+              <ElDatePicker
+                v-model="formModel.registrationStartTime"
+                placeholder="请选择报名开始时间"
+                style="width: 100%"
+                type="datetime"
+                value-format="YYYY-MM-DD HH:mm:ss"
+              />
+            </ElFormItem>
+          </ElCol>
+        </ElRow>
+
+        <ElRow :gutter="24">
+          <ElCol :span="12">
+            <ElFormItem label="报名截止时间">
+              <ElDatePicker
+                v-model="formModel.registrationEndTime"
+                placeholder="请选择报名截止时间"
+                style="width: 100%"
+                type="datetime"
+                value-format="YYYY-MM-DD HH:mm:ss"
               />
             </ElFormItem>
           </ElCol>

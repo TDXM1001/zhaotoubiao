@@ -111,6 +111,11 @@ const tableColumns = reactive<ColumnProps<SystemBidLotApi.LotItem>[]>([
     prop: 'evaluationMode',
   },
   {
+    label: '报名截止时间',
+    minWidth: 180,
+    prop: 'registrationEndTime',
+  },
+  {
     label: '投标截止时间',
     minWidth: 180,
     prop: 'bidEndTime',

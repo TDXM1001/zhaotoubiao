@@ -150,6 +150,12 @@ onMounted(() => {
         <ElDescriptionsItem label="定标方式">
           {{ getDictLabel(awardModeMap, lotDetail.awardMode) }}
         </ElDescriptionsItem>
+        <ElDescriptionsItem label="报名开始时间">
+          {{ lotDetail.registrationStartTime || '--' }}
+        </ElDescriptionsItem>
+        <ElDescriptionsItem label="报名截止时间">
+          {{ lotDetail.registrationEndTime || '--' }}
+        </ElDescriptionsItem>
         <ElDescriptionsItem label="投标开始时间">
           {{ lotDetail.bidStartTime || '--' }}
         </ElDescriptionsItem>

@@ -233,6 +233,14 @@ public class BidLotService {
     }
 
     private ResponseDTO<String> validateLotForm(BidLotAddForm form, Long lotId) {
+        if (form.getRegistrationStartTime() != null && form.getRegistrationEndTime() != null
+                && form.getRegistrationStartTime().isAfter(form.getRegistrationEndTime())) {
+            return ResponseDTO.userErrorParam("报名开始时间不能晚于报名截止时间");
+        }
+        if (form.getRegistrationEndTime() != null && form.getBidEndTime() != null
+                && form.getRegistrationEndTime().isAfter(form.getBidEndTime())) {
+            return ResponseDTO.userErrorParam("报名截止时间不能晚于投标截止时间");
+        }
         if (form.getBidStartTime() != null && form.getBidEndTime() != null
                 && form.getBidStartTime().isAfter(form.getBidEndTime())) {
             return ResponseDTO.userErrorParam("投标开始时间不能晚于投标截止时间");

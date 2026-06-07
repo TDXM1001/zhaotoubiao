@@ -26,6 +26,14 @@ export const LOT_STATUS_OPTIONS: EnumProps[] = [
   { label: '已废止', tagType: 'danger', value: 'VOIDED' },
 ];
 
+/** 供应商报名状态选项 */
+export const REGISTRATION_STATUS_OPTIONS: EnumProps[] = [
+  { label: '待审核', tagType: 'warning', value: 'SUBMITTED' },
+  { label: '已通过', tagType: 'success', value: 'QUALIFIED' },
+  { label: '已驳回', tagType: 'danger', value: 'REJECTED' },
+  { label: '已取消', tagType: 'info', value: 'CANCELLED' },
+];
+
 const STATUS_TYPE_MAP: Record<
   string,
   'danger' | 'info' | 'primary' | 'success' | 'warning'
@@ -37,7 +45,20 @@ const STATUS_TYPE_MAP: Record<
   DRAFT: 'info',
   PLANNED: 'warning',
   PUBLISHED: 'success',
+  QUALIFIED: 'success',
+  REJECTED: 'danger',
+  SUBMITTED: 'warning',
   VOIDED: 'danger',
+};
+
+const REGISTRATION_STATUS_TYPE_MAP: Record<
+  string,
+  'danger' | 'info' | 'primary' | 'success' | 'warning'
+> = {
+  CANCELLED: 'info',
+  QUALIFIED: 'success',
+  REJECTED: 'danger',
+  SUBMITTED: 'warning',
 };
 
 function getLabelFromOptions(options: EnumProps[], value?: string) {
@@ -55,6 +76,16 @@ export function getProjectStatusText(status?: string) {
 /** 获取标段状态文本 */
 export function getLotStatusText(status?: string) {
   return getLabelFromOptions(LOT_STATUS_OPTIONS, status);
+}
+
+/** 获取供应商报名状态文本 */
+export function getRegistrationStatusText(status?: string) {
+  return getLabelFromOptions(REGISTRATION_STATUS_OPTIONS, status);
+}
+
+/** 获取供应商报名状态标签样式 */
+export function getRegistrationStatusTagType(status?: string) {
+  return REGISTRATION_STATUS_TYPE_MAP[status ?? 'SUBMITTED'] ?? 'info';
 }
 
 /** 获取状态标签样式 */

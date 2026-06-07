@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.system.bid.registration.dao.BidRegistrationDao">
+
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.system.bid.registration.domain.vo.BidRegistrationVO">
+        SELECT r.registration_id,
+               r.project_id,
+               p.project_name,
+               r.lot_id,
+               l.lot_name,
+               l.lot_code,
+               r.supplier_enterprise_id,
+               r.supplier_name_snapshot,
+               r.supplier_credit_code,
+               r.contact_name,
+               r.contact_phone,
+               r.contact_email,
+               r.registration_type,
+               r.status,
+               r.submit_time,
+               r.qualified_result,
+               r.qualified_time,
+               r.qualified_by,
+               r.reject_reason,
+               r.cancel_time,
+               r.cancel_reason,
+               r.remark,
+               r.version,
+               r.create_time,
+               r.update_time
+        FROM t_bid_registration r
+        INNER JOIN t_bid_project p ON p.project_id = r.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = r.lot_id
+        <where>
+            r.deleted_flag = #{queryForm.deletedFlag}
+            AND p.deleted_flag = 0
+            AND l.deleted_flag = 0
+            <if test="queryForm.keyword != null and queryForm.keyword != ''">
+                AND (
+                    p.project_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR r.supplier_name_snapshot LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR r.supplier_credit_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                )
+            </if>
+            <if test="queryForm.projectId != null">
+                AND r.project_id = #{queryForm.projectId}
+            </if>
+            <if test="queryForm.lotId != null">
+                AND r.lot_id = #{queryForm.lotId}
+            </if>
+            <if test="queryForm.status != null and queryForm.status != ''">
+                AND r.status = #{queryForm.status}
+            </if>
+            <if test="queryForm.registrationType != null and queryForm.registrationType != ''">
+                AND r.registration_type = #{queryForm.registrationType}
+            </if>
+        </where>
+        ORDER BY r.create_time DESC, r.registration_id DESC
+    </select>
+
+    <select id="getDetail" resultType="net.lab1024.sa.admin.module.system.bid.registration.domain.vo.BidRegistrationVO">
+        SELECT r.registration_id,
+               r.project_id,
+               p.project_name,
+               r.lot_id,
+               l.lot_name,
+               l.lot_code,
+               r.supplier_enterprise_id,
+               r.supplier_name_snapshot,
+               r.supplier_credit_code,
+               r.contact_name,
+               r.contact_phone,
+               r.contact_email,
+               r.registration_type,
+               r.status,
+               r.submit_time,
+               r.qualified_result,
+               r.qualified_time,
+               r.qualified_by,
+               r.reject_reason,
+               r.cancel_time,
+               r.cancel_reason,
+               r.remark,
+               r.version,
+               r.create_time,
+               r.update_time
+        FROM t_bid_registration r
+        INNER JOIN t_bid_project p ON p.project_id = r.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = r.lot_id
+        WHERE r.registration_id = #{registrationId}
+          AND r.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <update id="updateWithVersion">
+        UPDATE t_bid_registration
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="submitTime != null">submit_time = #{submitTime},</if>
+            <if test="qualifiedResult != null">qualified_result = #{qualifiedResult},</if>
+            <if test="qualifiedTime != null">qualified_time = #{qualifiedTime},</if>
+            <if test="qualifiedBy != null">qualified_by = #{qualifiedBy},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+            <if test="cancelTime != null">cancel_time = #{cancelTime},</if>
+            <if test="cancelReason != null">cancel_reason = #{cancelReason},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            version = version + 1
+        </set>
+        WHERE registration_id = #{registrationId}
+          AND version = #{version}
+          AND deleted_flag = 0
+    </update>
+</mapper>
