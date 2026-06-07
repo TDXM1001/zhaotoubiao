@@ -1,0 +1,163 @@
+@reference "@vben/tailwind-config/theme";
+
+:root .vxe-grid {
+  --vxe-ui-font-color: hsl(var(--foreground));
+  --vxe-ui-font-primary-color: hsl(var(--primary));
+
+  /* --vxe-ui-font-lighten-color: #babdc0;
+  --vxe-ui-font-darken-color: #86898e; */
+  --vxe-ui-font-disabled-color: hsl(var(--foreground) / 50%);
+
+  /* base */
+  --vxe-ui-base-popup-border-color: hsl(var(--border));
+  --vxe-ui-input-disabled-color: hsl(var(--border) / 60%);
+
+  /* --vxe-ui-base-popup-box-shadow: 0px 12px 30px 8px rgb(0 0 0 / 50%); */
+
+  /* layout */
+  --vxe-ui-layout-background-color: hsl(var(--background));
+  --vxe-ui-table-resizable-line-color: hsl(var(--heavy));
+
+  /* --vxe-ui-table-fixed-left-scrolling-box-shadow: 8px 0px 10px -5px hsl(var(--accent));
+  --vxe-ui-table-fixed-right-scrolling-box-shadow: -8px 0px 10px -5px hsl(var(--accent)); */
+
+  /* input */
+  --vxe-ui-input-border-color: hsl(var(--border));
+
+  /* --vxe-ui-input-placeholder-color: #8d9095; */
+
+  /* --vxe-ui-input-disabled-background-color: #262727; */
+
+  /* loading */
+  --vxe-ui-loading-background-color: hsl(var(--overlay-content));
+
+  /* table */
+  --vxe-ui-table-header-background-color: hsl(var(--accent)); /* 恢复带背景色的表头（类似 Element Plus 的浅灰表头） */
+  --vxe-ui-table-border-color: hsl(var(--border)); /* 恢复标准边框线 */
+  --vxe-ui-table-row-hover-background-color: hsl(var(--accent-hover));
+  --vxe-ui-table-row-striped-background-color: hsl(var(--accent) / 30%); /* 斑马纹颜色，比背景稍深一点点 */
+  --vxe-ui-table-row-hover-striped-background-color: hsl(var(--accent-hover));
+  --vxe-ui-table-row-radio-checked-background-color: hsl(var(--primary) / 10%); /* 选中行跟随系统主题色(Primary)变浅 */
+  --vxe-ui-table-row-hover-radio-checked-background-color: hsl(var(--primary) / 15%);
+  --vxe-ui-table-row-checkbox-checked-background-color: hsl(var(--primary) / 10%); /* 选中行跟随系统主题色变浅 */
+  --vxe-ui-table-row-hover-checkbox-checked-background-color: hsl(var(--primary) / 15%);
+  --vxe-ui-table-row-current-background-color: hsl(var(--primary) / 10%);
+  --vxe-ui-table-row-hover-current-background-color: hsl(var(--primary) / 15%);
+  --vxe-ui-font-primary-tinge-color: hsl(var(--primary));
+  --vxe-ui-font-primary-lighten-color: hsl(var(--primary) / 60%);
+  --vxe-ui-font-primary-darken-color: hsl(var(--primary));
+
+  height: auto !important;
+
+  /* --vxe-ui-table-fixed-scrolling-box-shadow-color: rgb(0 0 0 / 80%); */
+}
+
+/* =========================================================
+   Element Plus 经典 UI 风格适配
+   ========================================================= */
+.vxe-table--render-default {
+  /* 增加单元格的上下内边距，让表格看起来更舒展 (接近 Element 默认 size) */
+  .vxe-body--column {
+    padding: 0.6rem 0 !important;
+  }
+
+  /* 表头文字加粗并加深，更像 Element Plus 默认风格 */
+  .vxe-header--column {
+    padding: 0.6rem 0 !important;
+    font-weight: 700 !important;
+    color: hsl(var(--foreground)) !important; 
+  }
+}
+
+/* =========================================================
+   分页器 Element Plus 风格适配
+   ========================================================= */
+.vxe-pager {
+  /* 基础按钮样式重写：严格对齐 Element Plus 的 32x32 尺寸 */
+  .vxe-pager--prev-btn,
+  .vxe-pager--next-btn,
+  .vxe-pager--num-btn,
+  .vxe-pager--jump-prev,
+  .vxe-pager--jump-next {
+    min-width: 32px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    padding: 0 4px !important;
+    text-align: center;
+    border-radius: 4px !important;
+    margin: 0 4px !important;
+    background-color: transparent !important;
+    border: none !important;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+  }
+
+  /* 悬浮效果 */
+  .vxe-pager--prev-btn:not(.is--disabled):hover,
+  .vxe-pager--next-btn:not(.is--disabled):hover,
+  .vxe-pager--num-btn:not(.is--active):hover,
+  .vxe-pager--jump-prev:not(.is--disabled):hover,
+  .vxe-pager--jump-next:not(.is--disabled):hover {
+    color: hsl(var(--primary)) !important;
+  }
+
+  /* 当前选中页高亮 (核心：使用系统 primary 色) */
+  .vxe-pager--num-btn.is--active {
+    background-color: hsl(var(--primary)) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+  }
+
+  .vxe-pager--wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  /* 精确还原截图的布局：总条数和条数选择器靠左(且紧挨着)，翻页器靠右 */
+  .vxe-pager--total {
+    margin-right: 16px !important; /* 紧挨着 sizes */
+  }
+
+  .vxe-pager--sizes {
+    margin-right: auto !important; /* 核心：把右边的所有元素(翻页器)推到最右边 */
+  }
+}
+
+.vxe-pager--wrapper {
+  @apply w-full;
+}
+
+.vxe-pager--wrapper {
+  @apply justify-center md:justify-end;
+}
+
+.vxe-tools--operate {
+  margin-right: 0.25rem;
+  margin-left: 0.75rem;
+}
+
+.vxe-table-custom--checkbox-option:hover {
+  background: none !important;
+}
+
+.vxe-toolbar {
+  padding: 0;
+}
+
+.vxe-buttons--wrapper:not(:empty),
+.vxe-tools--operate:not(:empty),
+.vxe-tools--wrapper:not(:empty) {
+  padding: 0.6em 0;
+}
+
+.vxe-tools--operate:not(:has(button)) {
+  margin-left: 0;
+}
+
+.vxe-grid--layout-header-wrapper {
+  overflow: visible;
+}
+
+.vxe-grid--layout-body-content-wrapper {
+  overflow: hidden;
+}
