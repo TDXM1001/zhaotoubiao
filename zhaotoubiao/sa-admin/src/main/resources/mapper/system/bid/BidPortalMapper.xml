@@ -148,4 +148,34 @@
           AND l.deleted_flag = 0
         LIMIT 1
     </select>
+
+    <select id="getLotResult" resultType="net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalResultVO">
+        SELECT l.lot_id,
+               l.project_id,
+               p.project_name,
+               l.lot_code,
+               l.lot_name,
+               a.status AS award_status,
+               CASE WHEN a.award_id IS NOT NULL AND a.status = 'CONFIRMED' THEN 1 ELSE 0 END AS result_visible,
+               CASE WHEN a.winner_credit_code = #{supplierCreditCode} THEN 1 ELSE 0 END AS winner_flag,
+               a.award_amount,
+               a.public_notice_time,
+               CASE WHEN EXISTS (
+                    SELECT 1
+                    FROM t_bid_submission s
+                    WHERE s.lot_id = l.lot_id
+                      AND s.supplier_credit_code = #{supplierCreditCode}
+                      AND s.deleted_flag = 0
+               ) THEN 1 ELSE 0 END AS participated_flag
+        FROM t_bid_lot l
+        INNER JOIN t_bid_project p ON p.project_id = l.project_id
+        LEFT JOIN t_bid_award a
+          ON a.lot_id = l.lot_id
+         AND a.status = 'CONFIRMED'
+         AND a.deleted_flag = 0
+        WHERE l.lot_id = #{lotId}
+          AND l.deleted_flag = 0
+          AND p.deleted_flag = 0
+        LIMIT 1
+    </select>
 </mapper>

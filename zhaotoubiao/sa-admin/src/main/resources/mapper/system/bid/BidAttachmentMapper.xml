@@ -44,4 +44,13 @@
           AND a.deleted_flag = 0
         LIMIT 1
     </select>
+
+    <select id="countByBusinessAndFile" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM t_bid_attachment
+        WHERE business_type = #{businessType}
+          AND business_id = #{businessId}
+          AND file_id = #{fileId}
+          AND deleted_flag = 0
+    </select>
 </mapper>

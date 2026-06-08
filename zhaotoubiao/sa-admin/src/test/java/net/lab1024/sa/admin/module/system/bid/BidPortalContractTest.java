@@ -8,6 +8,7 @@ import net.lab1024.sa.admin.module.system.bid.portal.domain.form.BidPortalSubmis
 import net.lab1024.sa.admin.module.system.bid.portal.domain.form.BidPortalSubmissionCreateForm;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalProjectVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRegistrationVO;
+import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalResultVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalSubmissionVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,6 +48,7 @@ class BidPortalContractTest {
         assertEndpoint("/bid/portal/submissions/{submissionId}", GetMapping.class);
         assertEndpoint("/bid/portal/submissions/{submissionId}/actions/submit-bid", PostMapping.class);
         assertEndpoint("/bid/portal/submissions/{submissionId}/actions/withdraw-bid", PostMapping.class);
+        assertEndpoint("/bid/portal/lots/{lotId}/result", GetMapping.class);
     }
 
     @Test
@@ -54,6 +56,7 @@ class BidPortalContractTest {
         assertNoAllowedActions(BidPortalProjectVO.class);
         assertNoAllowedActions(BidPortalRegistrationVO.class);
         assertNoAllowedActions(BidPortalSubmissionVO.class);
+        assertNoAllowedActions(BidPortalResultVO.class);
     }
 
     @Test

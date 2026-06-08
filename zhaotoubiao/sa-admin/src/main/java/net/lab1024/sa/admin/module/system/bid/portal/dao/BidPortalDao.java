@@ -5,6 +5,7 @@ import net.lab1024.sa.admin.module.system.bid.portal.domain.form.BidPortalProjec
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalLotVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalProjectVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRegistrationVO;
+import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalResultVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalSubmissionVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -46,4 +47,10 @@ public interface BidPortalDao {
      */
     BidPortalSubmissionVO getSubmission(@Param("submissionId") Long submissionId,
                                         @Param("supplierCreditCode") String supplierCreditCode);
+
+    /**
+     * 查询当前供应商标段结果
+     */
+    BidPortalResultVO getLotResult(@Param("lotId") Long lotId,
+                                   @Param("supplierCreditCode") String supplierCreditCode);
 }

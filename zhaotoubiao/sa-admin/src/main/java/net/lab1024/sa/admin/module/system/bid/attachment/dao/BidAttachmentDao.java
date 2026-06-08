@@ -29,4 +29,11 @@ public interface BidAttachmentDao extends BaseMapper<BidAttachmentEntity> {
     BidAttachmentVO getByBusinessAndAttachment(@Param("businessType") String businessType,
                                                @Param("businessId") Long businessId,
                                                @Param("attachmentId") Long attachmentId);
+
+    /**
+     * 统计业务对象内指定文件关联次数
+     */
+    Long countByBusinessAndFile(@Param("businessType") String businessType,
+                                @Param("businessId") Long businessId,
+                                @Param("fileId") Long fileId);
 }

@@ -2,6 +2,7 @@ package net.lab1024.sa.admin.module.system.bid.tender.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
+import net.lab1024.sa.admin.module.system.bid.attachment.domain.form.BidAttachmentCreateForm;
 import net.lab1024.sa.admin.module.system.bid.attachment.service.BidAttachmentService;
 import net.lab1024.sa.admin.module.system.bid.common.constant.BidBusinessTypeEnum;
 import net.lab1024.sa.admin.module.system.bid.common.constant.BidLotStatusEnum;
@@ -116,6 +117,19 @@ public class BidTenderService {
             return ResponseDTO.error(UserErrorCode.DATA_NOT_EXIST);
         }
         return bidAttachmentService.getPreviewUrl(BidBusinessTypeEnum.TENDER_VERSION.getCode(), tenderVersionId, attachmentId);
+    }
+
+    /**
+     * 关联招标文件附件
+     */
+    public ResponseDTO<String> createAttachment(Long tenderVersionId, BidAttachmentCreateForm createForm) {
+        BidTenderVersionEntity current = getCurrent(tenderVersionId);
+        if (current == null) {
+            return ResponseDTO.error(UserErrorCode.DATA_NOT_EXIST);
+        }
+        createForm.setVersionNo(current.getVersionNo());
+        return bidAttachmentService.create(BidBusinessTypeEnum.TENDER_VERSION.getCode(),
+                tenderVersionId, current.getProjectId(), current.getLotId(), createForm);
     }
 
     /**

@@ -15,6 +15,7 @@ import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalAuthVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalProjectVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRegistrationVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRequestUser;
+import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalResultVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalSubmissionVO;
 import net.lab1024.sa.admin.module.system.bid.portal.service.BidPortalAuthService;
 import net.lab1024.sa.admin.module.system.bid.portal.service.BidPortalService;
@@ -130,6 +131,12 @@ public class BidPortalController {
             return checkResult;
         }
         return bidPortalService.withdrawBid(actionForm, currentSupplier());
+    }
+
+    @Operation(summary = "门户查询本人标段结果")
+    @GetMapping("/bid/portal/lots/{lotId}/result")
+    public ResponseDTO<BidPortalResultVO> getLotResult(@PathVariable Long lotId) {
+        return bidPortalService.getLotResult(lotId, currentSupplier());
     }
 
     private ResponseDTO<String> checkSubmissionId(Long pathSubmissionId, Long formSubmissionId) {

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import net.lab1024.sa.admin.constant.AdminSwaggerTagConst;
+import net.lab1024.sa.admin.module.system.bid.attachment.domain.form.BidAttachmentCreateForm;
 import net.lab1024.sa.admin.module.system.bid.submission.domain.form.BidSubmissionActionForm;
 import net.lab1024.sa.admin.module.system.bid.submission.domain.form.BidSubmissionCreateForm;
 import net.lab1024.sa.admin.module.system.bid.submission.domain.form.BidSubmissionQueryForm;
@@ -104,6 +105,13 @@ public class BidSubmissionController {
     @SaCheckPermission("bid:submission:download")
     public ResponseDTO<String> getAttachmentPreviewUrl(@PathVariable Long submissionId, @PathVariable Long attachmentId) {
         return bidSubmissionService.getAttachmentPreviewUrl(submissionId, attachmentId);
+    }
+
+    @Operation(summary = "资源化关联投标附件")
+    @PostMapping("/bid/submissions/{submissionId}/attachments")
+    @SaCheckPermission("bid:submission:submit-bid")
+    public ResponseDTO<String> createAttachment(@PathVariable Long submissionId, @RequestBody @Valid BidAttachmentCreateForm createForm) {
+        return bidSubmissionService.createAttachment(submissionId, createForm);
     }
 
     private ResponseDTO<String> checkSubmissionId(Long pathSubmissionId, Long formSubmissionId) {

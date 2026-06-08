@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import net.lab1024.sa.admin.constant.AdminSwaggerTagConst;
+import net.lab1024.sa.admin.module.system.bid.attachment.domain.form.BidAttachmentCreateForm;
 import net.lab1024.sa.admin.module.system.bid.tender.domain.form.BidTenderActionForm;
 import net.lab1024.sa.admin.module.system.bid.tender.domain.form.BidTenderCreateForm;
 import net.lab1024.sa.admin.module.system.bid.tender.domain.form.BidTenderQueryForm;
@@ -126,6 +127,13 @@ public class BidTenderController {
     @SaCheckPermission("bid:tender:query")
     public ResponseDTO<String> getAttachmentPreviewUrl(@PathVariable Long tenderVersionId, @PathVariable Long attachmentId) {
         return bidTenderService.getAttachmentPreviewUrl(tenderVersionId, attachmentId);
+    }
+
+    @Operation(summary = "资源化关联招标文件附件")
+    @PostMapping("/bid/tenders/{tenderVersionId}/attachments")
+    @SaCheckPermission("bid:tender:update")
+    public ResponseDTO<String> createAttachment(@PathVariable Long tenderVersionId, @RequestBody @Valid BidAttachmentCreateForm createForm) {
+        return bidTenderService.createAttachment(tenderVersionId, createForm);
     }
 
     private ResponseDTO<String> checkTenderVersionId(Long pathTenderVersionId, Long formTenderVersionId) {

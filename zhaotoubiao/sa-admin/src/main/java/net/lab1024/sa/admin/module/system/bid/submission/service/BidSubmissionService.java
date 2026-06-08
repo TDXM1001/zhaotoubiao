@@ -3,6 +3,7 @@ package net.lab1024.sa.admin.module.system.bid.submission.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
+import net.lab1024.sa.admin.module.system.bid.attachment.domain.form.BidAttachmentCreateForm;
 import net.lab1024.sa.admin.module.system.bid.attachment.service.BidAttachmentService;
 import net.lab1024.sa.admin.module.system.bid.common.constant.BidBusinessTypeEnum;
 import net.lab1024.sa.admin.module.system.bid.common.constant.BidLotStatusEnum;
@@ -127,6 +128,19 @@ public class BidSubmissionService {
         }
         return bidAttachmentService.getPreviewUrl(BidBusinessTypeEnum.SUBMISSION_VERSION.getCode(),
                 detail.getLatestSubmissionVersionId(), attachmentId);
+    }
+
+    /**
+     * 关联最新投标版本附件
+     */
+    public ResponseDTO<String> createAttachment(Long submissionId, BidAttachmentCreateForm createForm) {
+        BidSubmissionVO detail = bidSubmissionDao.getDetail(submissionId);
+        if (detail == null || detail.getLatestSubmissionVersionId() == null) {
+            return ResponseDTO.error(UserErrorCode.DATA_NOT_EXIST);
+        }
+        createForm.setVersionNo(detail.getLatestVersionNo());
+        return bidAttachmentService.create(BidBusinessTypeEnum.SUBMISSION_VERSION.getCode(),
+                detail.getLatestSubmissionVersionId(), detail.getProjectId(), detail.getLotId(), createForm);
     }
 
     /**

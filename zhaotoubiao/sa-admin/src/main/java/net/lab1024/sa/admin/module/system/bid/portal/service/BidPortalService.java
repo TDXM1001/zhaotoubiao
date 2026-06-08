@@ -14,6 +14,7 @@ import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalLotVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalProjectVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRegistrationVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRequestUser;
+import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalResultVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalSubmissionVO;
 import net.lab1024.sa.admin.module.system.bid.registration.domain.form.BidRegistrationAddForm;
 import net.lab1024.sa.admin.module.system.bid.registration.service.BidRegistrationService;
@@ -175,6 +176,29 @@ public class BidPortalService {
 
         BidSubmissionActionForm internalForm = SmartBeanUtil.copy(actionForm, BidSubmissionActionForm.class);
         return bidSubmissionService.withdraw(internalForm);
+    }
+
+    /**
+     * 查询当前供应商标段结果
+     */
+    public ResponseDTO<BidPortalResultVO> getLotResult(Long lotId, BidPortalRequestUser requestUser) {
+        ResponseDTO<String> loginCheck = checkLogin(requestUser);
+        if (!loginCheck.getOk()) {
+            return ResponseDTO.error(loginCheck);
+        }
+        BidPortalResultVO resultVO = bidPortalDao.getLotResult(lotId, requestUser.getSupplierCreditCode());
+        if (resultVO == null || !Boolean.TRUE.equals(resultVO.getParticipatedFlag())) {
+            return ResponseDTO.error(UserErrorCode.DATA_NOT_EXIST);
+        }
+
+        if (!Boolean.TRUE.equals(resultVO.getResultVisible())) {
+            resultVO.setMessage("结果尚未公示");
+            resultVO.setWinnerFlag(Boolean.FALSE);
+            resultVO.setAwardAmount(null);
+            return ResponseDTO.ok(resultVO);
+        }
+        resultVO.setMessage(Boolean.TRUE.equals(resultVO.getWinnerFlag()) ? "已中标" : "未中标");
+        return ResponseDTO.ok(resultVO);
     }
 
     private void fillSupplier(BidPortalRegistrationCreateForm createForm, BidPortalRequestUser requestUser) {
