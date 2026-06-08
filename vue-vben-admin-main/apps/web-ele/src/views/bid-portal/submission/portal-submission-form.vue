@@ -1,10 +1,18 @@
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import type { SystemBidPortalApi } from '#/api';
+
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
 
-import { Check, Plus, RefreshLeft } from '@element-plus/icons-vue';
+import {
+  Check,
+  Lock,
+  Plus,
+  RefreshLeft,
+  SwitchButton,
+} from '@element-plus/icons-vue';
 import {
   ElButton,
   ElCard,
@@ -18,15 +26,31 @@ import {
 import {
   createBidPortalRegistrationApi,
   createBidPortalSubmissionApi,
+  getBidPortalCurrentSupplierApi,
+  loginBidPortalAccountApi,
+  logoutBidPortalAccountApi,
+  registerBidPortalAccountApi,
   submitBidPortalSubmissionApi,
   withdrawBidPortalSubmissionApi,
 } from '#/api';
+import { getBidPortalAccessToken } from '#/api/core/bid-portal-token';
 
 defineOptions({
   name: 'BidPortalSubmissionForm',
 });
 
 const route = useRoute();
+const authMode = ref<'login' | 'register'>('login');
+const authLoading = ref(false);
+const portalAuth = ref<null | SystemBidPortalApi.PortalAuthInfo>(null);
+
+const authForm = reactive({
+  contactPhone: '',
+  loginName: '',
+  password: '',
+  supplierCreditCode: '',
+});
+
 const baseForm = reactive({
   contactName: '',
   contactPhone: '',
@@ -36,8 +60,6 @@ const baseForm = reactive({
   registrationType: 'PUBLIC',
   remark: '',
   submissionId: undefined as number | undefined,
-  supplierCreditCode: '',
-  supplierNameSnapshot: '',
   version: undefined as number | undefined,
 });
 
@@ -46,7 +68,79 @@ const submitForm = reactive({
   priceAmount: undefined as number | undefined,
 });
 
+const isPortalLoggedIn = computed(() => Boolean(portalAuth.value));
+
+function ensurePortalLogin() {
+  if (isPortalLoggedIn.value) {
+    return true;
+  }
+  ElMessage.warning('请先登录供应商门户账号');
+  return false;
+}
+
+async function loadCurrentSupplier() {
+  if (!getBidPortalAccessToken()) {
+    portalAuth.value = null;
+    return;
+  }
+  try {
+    portalAuth.value = await getBidPortalCurrentSupplierApi();
+  } catch {
+    portalAuth.value = null;
+  }
+}
+
+async function handlePortalLogin() {
+  if (!authForm.loginName || !authForm.password) {
+    ElMessage.warning('请填写登录名和密码');
+    return;
+  }
+  authLoading.value = true;
+  try {
+    portalAuth.value = await loginBidPortalAccountApi({
+      loginName: authForm.loginName.trim(),
+      password: authForm.password,
+    });
+    ElMessage.success('登录成功');
+  } finally {
+    authLoading.value = false;
+  }
+}
+
+async function handlePortalRegister() {
+  if (
+    !authForm.loginName ||
+    !authForm.password ||
+    !authForm.supplierCreditCode ||
+    !authForm.contactPhone
+  ) {
+    ElMessage.warning('请填写注册信息');
+    return;
+  }
+  authLoading.value = true;
+  try {
+    portalAuth.value = await registerBidPortalAccountApi({
+      contactPhone: authForm.contactPhone.trim(),
+      loginName: authForm.loginName.trim(),
+      password: authForm.password,
+      supplierCreditCode: authForm.supplierCreditCode.trim(),
+    });
+    ElMessage.success('注册成功');
+  } finally {
+    authLoading.value = false;
+  }
+}
+
+async function handlePortalLogout() {
+  await logoutBidPortalAccountApi();
+  portalAuth.value = null;
+  ElMessage.success('已退出');
+}
+
 async function handleCreateRegistration() {
+  if (!ensurePortalLogin()) {
+    return;
+  }
   await createBidPortalRegistrationApi({
     contactName: baseForm.contactName,
     contactPhone: baseForm.contactPhone,
@@ -54,13 +148,14 @@ async function handleCreateRegistration() {
     projectId: baseForm.projectId,
     registrationType: baseForm.registrationType,
     remark: baseForm.remark,
-    supplierCreditCode: baseForm.supplierCreditCode,
-    supplierNameSnapshot: baseForm.supplierNameSnapshot,
   });
   ElMessage.success('报名已提交');
 }
 
 async function handleCreateSubmission() {
+  if (!ensurePortalLogin()) {
+    return;
+  }
   if (!baseForm.registrationId) {
     ElMessage.warning('请先填写报名ID');
     return;
@@ -70,12 +165,14 @@ async function handleCreateSubmission() {
     projectId: baseForm.projectId,
     registrationId: baseForm.registrationId,
     remark: baseForm.remark,
-    supplierCreditCode: baseForm.supplierCreditCode,
   });
   ElMessage.success('投标记录已创建');
 }
 
 async function handleSubmitBid() {
+  if (!ensurePortalLogin()) {
+    return;
+  }
   if (!baseForm.submissionId || baseForm.version === undefined) {
     ElMessage.warning('请填写投标ID和版本号');
     return;
@@ -87,13 +184,15 @@ async function handleSubmitBid() {
     priceAmount: submitForm.priceAmount,
     remark: baseForm.remark,
     submissionId: baseForm.submissionId,
-    supplierCreditCode: baseForm.supplierCreditCode,
     version: baseForm.version,
   });
   ElMessage.success('投标已提交');
 }
 
 async function handleWithdrawBid() {
+  if (!ensurePortalLogin()) {
+    return;
+  }
   if (!baseForm.submissionId || baseForm.version === undefined) {
     ElMessage.warning('请填写投标ID和版本号');
     return;
@@ -101,15 +200,87 @@ async function handleWithdrawBid() {
   await withdrawBidPortalSubmissionApi({
     remark: baseForm.remark,
     submissionId: baseForm.submissionId,
-    supplierCreditCode: baseForm.supplierCreditCode,
     version: baseForm.version,
   });
   ElMessage.success('投标已撤回');
 }
+
+onMounted(() => {
+  void loadCurrentSupplier();
+});
 </script>
 
 <template>
   <Page auto-content-height class="bid-portal-submission-form-page">
+    <ElCard shadow="never">
+      <template #header>
+        <span>门户账号</span>
+      </template>
+      <div v-if="portalAuth" class="bid-portal-submission-form-page__auth-info">
+        <div>
+          <div class="bid-portal-submission-form-page__supplier-name">
+            {{ portalAuth.supplierName }}
+          </div>
+          <div class="bid-portal-submission-form-page__supplier-meta">
+            {{ portalAuth.supplierCreditCode }} / {{ portalAuth.loginName }}
+          </div>
+        </div>
+        <ElButton :icon="SwitchButton" @click="handlePortalLogout">
+          退出
+        </ElButton>
+      </div>
+      <ElForm v-else label-width="120px">
+        <div class="bid-portal-submission-form-page__auth-tabs">
+          <ElButton
+            :type="authMode === 'login' ? 'primary' : 'default'"
+            @click="authMode = 'login'"
+          >
+            登录
+          </ElButton>
+          <ElButton
+            :type="authMode === 'register' ? 'primary' : 'default'"
+            @click="authMode = 'register'"
+          >
+            注册
+          </ElButton>
+        </div>
+        <ElFormItem label="登录名">
+          <ElInput v-model="authForm.loginName" />
+        </ElFormItem>
+        <ElFormItem label="密码">
+          <ElInput v-model="authForm.password" show-password type="password" />
+        </ElFormItem>
+        <template v-if="authMode === 'register'">
+          <ElFormItem label="信用代码">
+            <ElInput v-model="authForm.supplierCreditCode" />
+          </ElFormItem>
+          <ElFormItem label="联系电话">
+            <ElInput v-model="authForm.contactPhone" />
+          </ElFormItem>
+        </template>
+        <ElFormItem>
+          <ElButton
+            v-if="authMode === 'login'"
+            :icon="Lock"
+            :loading="authLoading"
+            type="primary"
+            @click="handlePortalLogin"
+          >
+            登录
+          </ElButton>
+          <ElButton
+            v-else
+            :icon="Plus"
+            :loading="authLoading"
+            type="primary"
+            @click="handlePortalRegister"
+          >
+            注册
+          </ElButton>
+        </ElFormItem>
+      </ElForm>
+    </ElCard>
+
     <ElCard shadow="never">
       <template #header>
         <span>供应商参与信息</span>
@@ -120,12 +291,6 @@ async function handleWithdrawBid() {
         </ElFormItem>
         <ElFormItem label="标段ID">
           <ElInputNumber v-model="baseForm.lotId" :min="1" />
-        </ElFormItem>
-        <ElFormItem label="供应商名称">
-          <ElInput v-model="baseForm.supplierNameSnapshot" />
-        </ElFormItem>
-        <ElFormItem label="信用代码">
-          <ElInput v-model="baseForm.supplierCreditCode" />
         </ElFormItem>
         <ElFormItem label="联系人">
           <ElInput v-model="baseForm.contactName" />
@@ -181,7 +346,43 @@ async function handleWithdrawBid() {
 </template>
 
 <style scoped>
+.bid-portal-submission-form-page__auth-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.bid-portal-submission-form-page__auth-tabs {
+  margin: 0 0 16px 120px;
+}
+
+.bid-portal-submission-form-page__supplier-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.bid-portal-submission-form-page__supplier-meta {
+  margin-top: 4px;
+  color: var(--el-text-color-secondary);
+}
+
 .bid-portal-submission-form-page__section {
   margin-top: 12px;
+}
+
+.bid-portal-submission-form-page > :deep(.el-card + .el-card) {
+  margin-top: 12px;
+}
+
+@media (max-width: 640px) {
+  .bid-portal-submission-form-page__auth-info {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .bid-portal-submission-form-page__auth-tabs {
+    margin-left: 0;
+  }
 }
 </style>

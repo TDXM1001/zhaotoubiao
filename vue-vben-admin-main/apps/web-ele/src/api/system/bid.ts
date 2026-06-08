@@ -1,5 +1,10 @@
 import { requestClient } from '#/api/request';
 
+import {
+  clearBidPortalAccessToken,
+  setBidPortalAccessToken,
+} from '../core/bid-portal-token';
+
 export namespace SystemBidProjectApi {
   /** 分页结果 */
   export interface PageResult<T> {
@@ -368,6 +373,32 @@ export namespace SystemBidSubmissionApi {
 export namespace SystemBidPortalApi {
   export type AttachmentItem = SystemBidTenderApi.AttachmentItem;
 
+  /** 门户账号注册参数 */
+  export interface PortalAuthRegisterParams {
+    contactPhone: string;
+    loginName: string;
+    password: string;
+    supplierCreditCode: string;
+  }
+
+  /** 门户账号登录参数 */
+  export interface PortalAuthLoginParams {
+    loginName: string;
+    password: string;
+  }
+
+  /** 门户账号登录态 */
+  export interface PortalAuthInfo {
+    contactName?: string;
+    contactPhone?: string;
+    loginName: string;
+    portalAccountId: number;
+    supplierCreditCode: string;
+    supplierEnterpriseId?: null | number;
+    supplierName: string;
+    token?: string;
+  }
+
   /** 门户项目分页查询参数 */
   export interface PortalProjectQueryParams {
     keyword?: string;
@@ -414,9 +445,9 @@ export namespace SystemBidPortalApi {
     projectId: number;
     registrationType: string;
     remark?: string;
-    supplierCreditCode: string;
+    supplierCreditCode?: string;
     supplierEnterpriseId?: null | number;
-    supplierNameSnapshot: string;
+    supplierNameSnapshot?: string;
   }
 
   /** 门户报名 */
@@ -442,14 +473,14 @@ export namespace SystemBidPortalApi {
     projectId: number;
     registrationId: number;
     remark?: string;
-    supplierCreditCode: string;
+    supplierCreditCode?: string;
   }
 
   /** 门户投标动作参数 */
   export interface PortalSubmissionActionParams {
     remark?: string;
     submissionId: number;
-    supplierCreditCode: string;
+    supplierCreditCode?: string;
     version: number;
   }
 
@@ -754,6 +785,50 @@ export async function withdrawBidSubmissionApi(
   );
 }
 
+/** 门户账号注册 */
+export async function registerBidPortalAccountApi(
+  data: SystemBidPortalApi.PortalAuthRegisterParams,
+) {
+  const result = await requestClient.post<SystemBidPortalApi.PortalAuthInfo>(
+    '/bid/portal/auth/register',
+    data,
+  );
+  if (result.token) {
+    setBidPortalAccessToken(result.token);
+  }
+  return result;
+}
+
+/** 门户账号登录 */
+export async function loginBidPortalAccountApi(
+  data: SystemBidPortalApi.PortalAuthLoginParams,
+) {
+  const result = await requestClient.post<SystemBidPortalApi.PortalAuthInfo>(
+    '/bid/portal/auth/login',
+    data,
+  );
+  if (result.token) {
+    setBidPortalAccessToken(result.token);
+  }
+  return result;
+}
+
+/** 门户当前供应商 */
+export async function getBidPortalCurrentSupplierApi() {
+  return requestClient.get<SystemBidPortalApi.PortalAuthInfo>(
+    '/bid/portal/auth/me',
+  );
+}
+
+/** 门户账号退出 */
+export async function logoutBidPortalAccountApi() {
+  try {
+    return await requestClient.post<string>('/bid/portal/auth/logout');
+  } finally {
+    clearBidPortalAccessToken();
+  }
+}
+
 /** 门户查询项目分页 */
 export async function queryBidPortalProjectPageApi(
   data: SystemBidPortalApi.PortalProjectQueryParams,
@@ -780,11 +855,9 @@ export async function createBidPortalRegistrationApi(
 /** 门户查询本人报名详情 */
 export async function getBidPortalRegistrationDetailApi(
   registrationId: number | string,
-  supplierCreditCode: string,
 ) {
   return requestClient.get<SystemBidPortalApi.PortalRegistrationItem>(
     `/bid/portal/registrations/${registrationId}`,
-    { params: { supplierCreditCode } },
   );
 }
 
@@ -798,11 +871,9 @@ export async function createBidPortalSubmissionApi(
 /** 门户查询本人投标详情 */
 export async function getBidPortalSubmissionDetailApi(
   submissionId: number | string,
-  supplierCreditCode: string,
 ) {
   return requestClient.get<SystemBidPortalApi.PortalSubmissionItem>(
     `/bid/portal/submissions/${submissionId}`,
-    { params: { supplierCreditCode } },
   );
 }
 

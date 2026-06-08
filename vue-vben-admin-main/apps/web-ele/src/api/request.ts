@@ -18,6 +18,10 @@ import { ElMessage } from 'element-plus';
 import { useAuthStore } from '#/store';
 
 import { refreshTokenApi } from './core';
+import {
+  clearBidPortalAccessToken,
+  getBidPortalAccessToken,
+} from './core/bid-portal-token';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
@@ -64,8 +68,12 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   client.addRequestInterceptor({
     fulfilled: async (config) => {
       const accessStore = useAccessStore();
+      const requestUrl = String(config.url ?? '');
+      const isPortalRequest = requestUrl.startsWith('/bid/portal/');
 
-      config.headers.Authorization = formatToken(accessStore.accessToken);
+      config.headers.Authorization = formatToken(
+        isPortalRequest ? getBidPortalAccessToken() : accessStore.accessToken,
+      );
       config.headers['Accept-Language'] = preferences.app.locale;
       return config;
     },
@@ -95,7 +103,14 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   client.addResponseInterceptor({
     rejected: async (error) => {
       const { response } = error;
-      if (response?.data?.code === 30007) {
+      if (response?.data?.code === 30_007) {
+        const requestUrl = String(
+          response?.config?.url ?? error?.config?.url ?? '',
+        );
+        if (requestUrl.startsWith('/bid/portal/')) {
+          clearBidPortalAccessToken();
+          throw error;
+        }
         await doReAuthenticate();
       }
       throw error;
