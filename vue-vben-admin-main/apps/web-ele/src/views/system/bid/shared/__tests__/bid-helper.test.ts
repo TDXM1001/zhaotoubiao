@@ -4,6 +4,9 @@ import {
   ATTACHMENT_FILE_CATEGORY_OPTIONS,
   formatBidFileSize,
   getAttachmentCategoryText,
+  isAwardCandidateSubmission,
+  isAwardReadyEvaluation,
+  isEvaluationReadyLot,
   isOpeningReadyLot,
   TENDER_VERSION_TYPE_OPTIONS,
 } from '../bid-helper';
@@ -42,5 +45,26 @@ describe('bid helper options', () => {
     expect(isOpeningReadyLot({ status: 'BIDDING' })).toBe(false);
     expect(isOpeningReadyLot({ status: 'OPENED' })).toBe(false);
     expect(isOpeningReadyLot({})).toBe(false);
+  });
+
+  it('only allows opened lots to be selected for evaluation creation', () => {
+    expect(isEvaluationReadyLot({ status: 'OPENED' })).toBe(true);
+    expect(isEvaluationReadyLot({ status: 'BID_CLOSED' })).toBe(false);
+    expect(isEvaluationReadyLot({ status: 'EVALUATING' })).toBe(false);
+    expect(isEvaluationReadyLot({})).toBe(false);
+  });
+
+  it('only allows finalized evaluations to be selected for award creation', () => {
+    expect(isAwardReadyEvaluation({ status: 'FINALIZED' })).toBe(true);
+    expect(isAwardReadyEvaluation({ status: 'PENDING' })).toBe(false);
+    expect(isAwardReadyEvaluation({ status: 'SCORING' })).toBe(false);
+    expect(isAwardReadyEvaluation({})).toBe(false);
+  });
+
+  it('only allows opened submissions to be selected as award candidates', () => {
+    expect(isAwardCandidateSubmission({ status: 'OPENED' })).toBe(true);
+    expect(isAwardCandidateSubmission({ status: 'SUBMITTED' })).toBe(false);
+    expect(isAwardCandidateSubmission({ status: 'WITHDRAWN' })).toBe(false);
+    expect(isAwardCandidateSubmission({})).toBe(false);
   });
 });

@@ -235,6 +235,21 @@ export function isOpeningReadyLot(lot?: { status?: string }) {
   return lot?.status === 'BID_CLOSED';
 }
 
+/** 判断标段是否已进入可创建评标记录的状态 */
+export function isEvaluationReadyLot(lot?: { status?: string }) {
+  return lot?.status === 'OPENED';
+}
+
+/** 判断评标记录是否已进入可创建定标记录的状态 */
+export function isAwardReadyEvaluation(evaluation?: { status?: string }) {
+  return evaluation?.status === 'FINALIZED';
+}
+
+/** 判断投标记录是否可作为定标候选 */
+export function isAwardCandidateSubmission(submission?: { status?: string }) {
+  return submission?.status === 'OPENED';
+}
+
 /** 格式化招投标附件大小 */
 export function formatBidFileSize(fileSize?: null | number) {
   if (fileSize === null || fileSize === undefined) {
