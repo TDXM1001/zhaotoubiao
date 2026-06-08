@@ -1,0 +1,155 @@
+:root {
+  color: #1f2937;
+  background: #f5f7fb;
+  font-family:
+    Inter, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.portal-shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, #eef4ff 0, #f5f7fb 240px),
+    #f5f7fb;
+}
+
+.portal-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 64px;
+  padding: 0 32px;
+  background: rgb(255 255 255 / 92%);
+  border-bottom: 1px solid #e5e7eb;
+  backdrop-filter: blur(12px);
+}
+
+.portal-shell__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.portal-shell__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: #ffffff;
+  background: #155eef;
+  border-radius: 6px;
+}
+
+.portal-shell__nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.portal-shell__nav a {
+  padding: 8px 12px;
+  color: #475467;
+  border-radius: 6px;
+}
+
+.portal-shell__nav a.router-link-active {
+  color: #155eef;
+  background: #eaf1ff;
+}
+
+.portal-shell__main {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 40px;
+}
+
+.portal-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.portal-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.portal-page__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.portal-page__subtitle {
+  margin: 4px 0 0;
+  color: #667085;
+}
+
+.portal-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.portal-empty {
+  padding: 56px 16px;
+  color: #667085;
+  text-align: center;
+}
+
+.portal-table-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .portal-shell__header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px 16px;
+  }
+
+  .portal-shell__nav {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .portal-shell__main {
+    width: min(100% - 20px, 1180px);
+    padding-top: 16px;
+  }
+
+  .portal-page__toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .portal-table-footer {
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+}

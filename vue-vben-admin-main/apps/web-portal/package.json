@@ -1,0 +1,25 @@
+{
+  "name": "@vben/web-portal",
+  "version": "5.7.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm vite build --mode production",
+    "dev": "pnpm vite --mode development",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit --skipLibCheck"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "catalog:",
+    "element-plus": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:"
+  },
+  "devDependencies": {
+    "@vben/types": "workspace:*",
+    "unplugin-element-plus": "catalog:"
+  }
+}
