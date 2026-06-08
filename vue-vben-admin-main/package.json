@@ -26,7 +26,8 @@
   "type": "module",
   "scripts": {
     "bootstrap": "pnpm install",
-    "build": "pnpm run build:ele",
+    "build": "pnpm run build:all",
+    "build:all": "pnpm run build:ele && pnpm run build:portal",
     "build:analyze": "pnpm -F @vben/web-ele run build:analyze",
     "build:docker": "./scripts/deploy/build-local-docker-image.sh",
     "build:ele": "pnpm -F @vben/web-ele run build",

@@ -20,6 +20,8 @@
   },
   "devDependencies": {
     "@vben/types": "workspace:*",
-    "unplugin-element-plus": "catalog:"
+    "@vitejs/plugin-vue": "catalog:",
+    "unplugin-element-plus": "catalog:",
+    "vite": "catalog:"
   }
 }

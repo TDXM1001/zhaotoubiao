@@ -1,5 +1,7 @@
 FROM node:22-slim AS builder
 
+ARG VITE_APP=web-ele
+
 # --max-old-space-size
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -16,9 +18,13 @@ COPY . /app
 
 # 安装依赖
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run build:ele
 
-RUN echo "Builder Success 🎉"
+# 按应用名构建，支持管理端 web-ele 与门户端 web-portal 分别出镜像。
+RUN pnpm -F @vben/${VITE_APP} run build \
+    && rm -rf /app/deploy-dist \
+    && cp -r /app/apps/${VITE_APP}/dist /app/deploy-dist
+
+RUN echo "Builder Success"
 
 FROM nginx:stable-alpine AS production
 
@@ -27,7 +33,7 @@ RUN echo "types { application/javascript js mjs; }" > /etc/nginx/conf.d/mjs.conf
     && rm -rf /etc/nginx/conf.d/default.conf
 
 # 复制构建产物
-COPY --from=builder /app/apps/web-ele/dist /usr/share/nginx/html
+COPY --from=builder /app/deploy-dist /usr/share/nginx/html
 
 # 复制 nginx 配置
 COPY --from=builder /app/scripts/deploy/nginx.conf /etc/nginx/nginx.conf

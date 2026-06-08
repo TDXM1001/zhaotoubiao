@@ -9,6 +9,10 @@
       "path": "apps/web-ele"
     },
     {
+      "name": "@vben/web-portal",
+      "path": "apps/web-portal"
+    },
+    {
       "name": "@vben/commitlint-config",
       "path": "internal/lint-configs/commitlint-config"
     },
