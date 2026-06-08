@@ -194,8 +194,8 @@ describe('buildSmartAdminRoutes', () => {
         },
       ],
       new Set([
-        '/system/bid/project/project-list.vue',
         '/system/bid/project/project-form.vue',
+        '/system/bid/project/project-list.vue',
       ]),
     );
 
@@ -214,6 +214,192 @@ describe('buildSmartAdminRoutes', () => {
         title: '招标项目新增',
       },
       path: '/system/bid/project/create',
+    });
+  });
+
+  it('maps p1 bid tender submission and portal menu paths to their routes', () => {
+    const routes = buildSmartAdminRoutes(
+      [
+        {
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 731,
+          menuName: '招投标管理',
+          menuType: 1,
+          parentId: 0,
+          sort: 1,
+          visibleFlag: true,
+        },
+        {
+          component: '/system/bid/tender/tender-list.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 760,
+          menuName: '招标文件',
+          menuType: 2,
+          parentId: 731,
+          path: '/system/bid/tender/list',
+          sort: 4,
+          visibleFlag: true,
+        },
+        {
+          component: '/system/bid/tender/tender-form.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 761,
+          menuName: '招标文件新增',
+          menuType: 2,
+          parentId: 760,
+          path: '/system/bid/tender/create',
+          sort: 11,
+          visibleFlag: false,
+        },
+        {
+          component: '/system/bid/tender/tender-detail.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 762,
+          menuName: '招标文件详情',
+          menuType: 2,
+          parentId: 760,
+          path: '/system/bid/tender/detail',
+          sort: 12,
+          visibleFlag: false,
+        },
+        {
+          component: '/system/bid/submission/submission-list.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 769,
+          menuName: '投标管理',
+          menuType: 2,
+          parentId: 731,
+          path: '/system/bid/submission/list',
+          sort: 5,
+          visibleFlag: true,
+        },
+        {
+          component: '/system/bid/submission/submission-detail.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 770,
+          menuName: '投标详情',
+          menuType: 2,
+          parentId: 769,
+          path: '/system/bid/submission/detail',
+          sort: 11,
+          visibleFlag: false,
+        },
+        {
+          component: '/bid-portal/project/portal-project-list.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 776,
+          menuName: '供应商门户',
+          menuType: 2,
+          parentId: 731,
+          path: '/bid-portal/project/list',
+          sort: 6,
+          visibleFlag: true,
+        },
+        {
+          component: '/bid-portal/project/portal-project-detail.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 777,
+          menuName: '门户项目详情',
+          menuType: 2,
+          parentId: 776,
+          path: '/bid-portal/project/detail',
+          sort: 11,
+          visibleFlag: false,
+        },
+        {
+          component: '/bid-portal/submission/portal-submission-form.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 778,
+          menuName: '门户投标表单',
+          menuType: 2,
+          parentId: 776,
+          path: '/bid-portal/submission/form',
+          sort: 12,
+          visibleFlag: false,
+        },
+      ],
+      new Set([
+        '/bid-portal/project/portal-project-detail.vue',
+        '/bid-portal/project/portal-project-list.vue',
+        '/bid-portal/submission/portal-submission-form.vue',
+        '/system/bid/submission/submission-detail.vue',
+        '/system/bid/submission/submission-list.vue',
+        '/system/bid/tender/tender-detail.vue',
+        '/system/bid/tender/tender-form.vue',
+        '/system/bid/tender/tender-list.vue',
+      ]),
+    );
+
+    expect(routes).toHaveLength(1);
+    expect(routes[0]?.children).toHaveLength(8);
+    const childRoutesByPath = new Map(
+      routes[0]?.children?.map((route) => [route.path, route]),
+    );
+
+    expect(childRoutesByPath.get('/system/bid/tender/list')).toMatchObject({
+      component: '/system/bid/tender/tender-list.vue',
+      path: '/system/bid/tender/list',
+    });
+    expect(childRoutesByPath.get('/system/bid/tender/create')).toMatchObject({
+      component: '/system/bid/tender/tender-form.vue',
+      meta: {
+        activePath: '/system/bid/tender/list',
+        hideInMenu: true,
+      },
+      path: '/system/bid/tender/create',
+    });
+    expect(childRoutesByPath.get('/system/bid/tender/detail')).toMatchObject({
+      component: '/system/bid/tender/tender-detail.vue',
+      meta: {
+        activePath: '/system/bid/tender/list',
+        hideInMenu: true,
+      },
+      path: '/system/bid/tender/detail',
+    });
+    expect(childRoutesByPath.get('/system/bid/submission/list')).toMatchObject(
+      {
+        component: '/system/bid/submission/submission-list.vue',
+        path: '/system/bid/submission/list',
+      },
+    );
+    expect(
+      childRoutesByPath.get('/system/bid/submission/detail'),
+    ).toMatchObject({
+      component: '/system/bid/submission/submission-detail.vue',
+      meta: {
+        activePath: '/system/bid/submission/list',
+        hideInMenu: true,
+      },
+      path: '/system/bid/submission/detail',
+    });
+    expect(childRoutesByPath.get('/bid-portal/project/list')).toMatchObject({
+      component: '/bid-portal/project/portal-project-list.vue',
+      path: '/bid-portal/project/list',
+    });
+    expect(childRoutesByPath.get('/bid-portal/project/detail')).toMatchObject({
+      component: '/bid-portal/project/portal-project-detail.vue',
+      meta: {
+        activePath: '/bid-portal/project/list',
+        hideInMenu: true,
+      },
+      path: '/bid-portal/project/detail',
+    });
+    expect(childRoutesByPath.get('/bid-portal/submission/form')).toMatchObject({
+      component: '/bid-portal/submission/portal-submission-form.vue',
+      meta: {
+        activePath: '/bid-portal/project/list',
+        hideInMenu: true,
+      },
+      path: '/bid-portal/submission/form',
     });
   });
 });
