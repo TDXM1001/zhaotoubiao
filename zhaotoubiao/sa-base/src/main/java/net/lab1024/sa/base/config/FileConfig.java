@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
+import java.io.File;
 import java.net.URI;
 
 /**
@@ -118,9 +119,14 @@ public class FileConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         if (MODE_LOCAL.equals(mode)) {
-            String path = localUploadPath.endsWith("/") ? localUploadPath : localUploadPath + "/";
-            registry.addResourceHandler(FileStorageLocalServiceImpl.UPLOAD_MAPPING + "/**").addResourceLocations("file:" + path);
+            registry.addResourceHandler(FileStorageLocalServiceImpl.UPLOAD_MAPPING + "/**")
+                    .addResourceLocations(buildLocalResourceLocation(localUploadPath));
         }
+    }
+
+    static String buildLocalResourceLocation(String uploadPath) {
+        String path = uploadPath.endsWith("/") ? uploadPath : uploadPath + "/";
+        return new File(path).toURI().toString();
     }
 
 }
