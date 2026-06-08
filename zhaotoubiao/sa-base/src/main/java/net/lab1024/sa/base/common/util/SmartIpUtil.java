@@ -53,10 +53,10 @@ public class SmartIpUtil {
     public static List<String> getRegionList(String ipStr) {
         List<String> regionList = new ArrayList<>();
         try {
+            ipStr = normalizeSearchIp(ipStr);
             if (SmartStringUtil.isEmpty(ipStr)) {
                 return regionList;
             }
-            ipStr = ipStr.trim();
             String region = IP_SEARCHER.search(ipStr);
             String[] split = region.split("\\|");
             regionList.addAll(Arrays.asList(split));
@@ -74,10 +74,10 @@ public class SmartIpUtil {
      */
     public static String getRegion(String ipStr) {
         try {
+            ipStr = normalizeSearchIp(ipStr);
             if (SmartStringUtil.isEmpty(ipStr)) {
                 return StringConst.EMPTY;
             }
-            ipStr = ipStr.trim();
             return IP_SEARCHER.search(ipStr);
         } catch (Exception e) {
             log.error("解析ip地址出错", e);
@@ -119,5 +119,26 @@ public class SmartIpUtil {
             e.printStackTrace();
         }
         return ipList;
+    }
+
+    /**
+     * ip2region 只支持 IPv4，先把本地 IPv6 和 IPv4 映射地址收口，避免本地登录记录产生错误日志。
+     */
+    private static String normalizeSearchIp(String ipStr) {
+        if (SmartStringUtil.isEmpty(ipStr)) {
+            return StringConst.EMPTY;
+        }
+        ipStr = ipStr.trim();
+        if ("0:0:0:0:0:0:0:1".equals(ipStr) || "::1".equals(ipStr)) {
+            return "127.0.0.1";
+        }
+        String ipv4MappedPrefix = "::ffff:";
+        if (ipStr.startsWith(ipv4MappedPrefix)) {
+            return ipStr.substring(ipv4MappedPrefix.length());
+        }
+        if (ipStr.contains(StringConst.COLON)) {
+            return StringConst.EMPTY;
+        }
+        return ipStr;
     }
 }
