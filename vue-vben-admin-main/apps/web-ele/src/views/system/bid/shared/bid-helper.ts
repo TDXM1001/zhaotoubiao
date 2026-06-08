@@ -150,6 +150,19 @@ function getLabelFromOptions(options: EnumProps[], value?: string) {
   return options.find((item) => item.value === value)?.label ?? value;
 }
 
+/** 判断招投标动作是否同时具备前端权限码和后端允许动作 */
+export function hasBidAction(options: {
+  accessCode: string;
+  accessCodes?: string[];
+  allowedAction: string;
+  allowedActions?: string[];
+}) {
+  return (
+    (options.accessCodes?.includes(options.accessCode) ?? false)
+    && (options.allowedActions?.includes(options.allowedAction) ?? false)
+  );
+}
+
 /** 获取项目状态文本 */
 export function getProjectStatusText(status?: string) {
   return getLabelFromOptions(PROJECT_STATUS_OPTIONS, status);

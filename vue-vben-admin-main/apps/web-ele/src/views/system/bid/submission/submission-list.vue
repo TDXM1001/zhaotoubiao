@@ -25,7 +25,6 @@ import {
   getBidRegistrationDetailApi,
   queryBidProjectListApi,
   queryBidSubmissionPageApi,
-  submitBidSubmissionApi,
   withdrawBidSubmissionApi,
 } from '#/api';
 import ProTable from '#/components/pro-table/index.vue';
@@ -223,30 +222,14 @@ async function handleCreateFromRegistration() {
   await reloadTable();
 }
 
-async function handleSubmit(row: SystemBidSubmissionApi.SubmissionItem) {
-  const { value } = await ElMessageBox.prompt(
-    `请输入供应商“${row.supplierNameSnapshot}”本次投标报价，可留空`,
-    '提交投标',
-    {
-      confirmButtonText: '确认提交',
-      inputPlaceholder: '请输入报价金额',
-      type: 'warning',
+function handleSubmit(row: SystemBidSubmissionApi.SubmissionItem) {
+  router.push({
+    path: '/system/bid/submission/detail',
+    query: {
+      openSubmit: '1',
+      submissionId: String(row.submissionId),
     },
-  );
-  const amountText = String(value ?? '').trim();
-  const priceAmount = amountText === '' ? undefined : Number(amountText);
-  if (priceAmount !== undefined && !Number.isFinite(priceAmount)) {
-    ElMessage.warning('报价金额格式不正确');
-    return;
-  }
-
-  await submitBidSubmissionApi({
-    priceAmount,
-    submissionId: row.submissionId,
-    version: row.version,
   });
-  ElMessage.success('投标已提交');
-  await reloadTable();
 }
 
 async function handleWithdraw(row: SystemBidSubmissionApi.SubmissionItem) {

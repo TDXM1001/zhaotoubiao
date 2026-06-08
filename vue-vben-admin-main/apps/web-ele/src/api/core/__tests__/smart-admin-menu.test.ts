@@ -78,6 +78,54 @@ const mockMenuList: SmartAdminMenuItem[] = [
   },
 ];
 
+const bidCatalogMenu: SmartAdminMenuItem = {
+  disabledFlag: false,
+  frameFlag: false,
+  menuId: 731,
+  menuName: 'Bid Management',
+  menuType: 1,
+  parentId: 0,
+  sort: 1,
+  visibleFlag: true,
+};
+
+interface BidRouteFixture {
+  component: string;
+  menuId: number;
+  parentId: number;
+  path: string;
+  sort: number;
+  visibleFlag?: boolean;
+}
+
+function createBidRouteMenu({
+  component,
+  menuId,
+  parentId,
+  path,
+  sort,
+  visibleFlag = true,
+}: BidRouteFixture): SmartAdminMenuItem {
+  return {
+    component,
+    disabledFlag: false,
+    frameFlag: false,
+    menuId,
+    menuName: path,
+    menuType: 2,
+    parentId,
+    path,
+    sort,
+    visibleFlag,
+  };
+}
+
+function getFirstLevelRoutesByPath(
+  routes: ReturnType<typeof buildSmartAdminRoutes>,
+) {
+  return new Map((routes[0]?.children ?? []).map((route) => [route.path, route]));
+}
+
 describe('normalizeSmartAdminComponentPath', () => {
   it('normalizes local view paths into vben route component paths', () => {
     expect(normalizeSmartAdminComponentPath('../views/demo/index.vue')).toBe(
@@ -246,6 +294,199 @@ describe('buildSmartAdminRoutes', () => {
       },
       path: '/system/bid/project/create',
     });
+  });
+
+  it('maps p1 bid project lot and registration pages as flat admin routes', () => {
+    const p1BidRouteFixtures: BidRouteFixture[] = [
+      {
+        component: '/system/bid/project/project-list.vue',
+        menuId: 732,
+        parentId: 731,
+        path: '/system/bid/project/list',
+        sort: 1,
+      },
+      {
+        component: '/system/bid/project/project-form.vue',
+        menuId: 733,
+        parentId: 732,
+        path: '/system/bid/project/create',
+        sort: 11,
+        visibleFlag: false,
+      },
+      {
+        component: '/system/bid/project/project-form.vue',
+        menuId: 734,
+        parentId: 732,
+        path: '/system/bid/project/edit',
+        sort: 12,
+        visibleFlag: false,
+      },
+      {
+        component: '/system/bid/project/project-detail.vue',
+        menuId: 735,
+        parentId: 732,
+        path: '/system/bid/project/detail',
+        sort: 13,
+        visibleFlag: false,
+      },
+      {
+        component: '/system/bid/lot/lot-list.vue',
+        menuId: 736,
+        parentId: 731,
+        path: '/system/bid/lot/list',
+        sort: 2,
+      },
+      {
+        component: '/system/bid/lot/lot-form.vue',
+        menuId: 737,
+        parentId: 736,
+        path: '/system/bid/lot/create',
+        sort: 11,
+        visibleFlag: false,
+      },
+      {
+        component: '/system/bid/lot/lot-form.vue',
+        menuId: 738,
+        parentId: 736,
+        path: '/system/bid/lot/edit',
+        sort: 12,
+        visibleFlag: false,
+      },
+      {
+        component: '/system/bid/lot/lot-detail.vue',
+        menuId: 739,
+        parentId: 736,
+        path: '/system/bid/lot/detail',
+        sort: 13,
+        visibleFlag: false,
+      },
+      {
+        component: '/system/bid/registration/registration-list.vue',
+        menuId: 752,
+        parentId: 731,
+        path: '/system/bid/registration/list',
+        sort: 3,
+      },
+      {
+        component: '/system/bid/registration/registration-form.vue',
+        menuId: 753,
+        parentId: 752,
+        path: '/system/bid/registration/create',
+        sort: 11,
+        visibleFlag: false,
+      },
+      {
+        component: '/system/bid/registration/registration-detail.vue',
+        menuId: 754,
+        parentId: 752,
+        path: '/system/bid/registration/detail',
+        sort: 12,
+        visibleFlag: false,
+      },
+    ];
+    const supplierPortalFixtures: BidRouteFixture[] = [
+      {
+        component: '/bid-portal/project/portal-project-list.vue',
+        menuId: 776,
+        parentId: 731,
+        path: '/bid-portal/project/list',
+        sort: 6,
+      },
+      {
+        component: '/bid-portal/project/portal-project-detail.vue',
+        menuId: 777,
+        parentId: 776,
+        path: '/bid-portal/project/detail',
+        sort: 11,
+        visibleFlag: false,
+      },
+    ];
+    const routes = buildSmartAdminRoutes(
+      [
+        bidCatalogMenu,
+        ...p1BidRouteFixtures.map(createBidRouteMenu),
+        ...supplierPortalFixtures.map(createBidRouteMenu),
+      ],
+      new Set(
+        [...p1BidRouteFixtures, ...supplierPortalFixtures].map(
+          ({ component }) => component,
+        ),
+      ),
+    );
+
+    expect(routes).toHaveLength(1);
+    expect(routes[0]?.children).toHaveLength(11);
+    const childRoutesByPath = getFirstLevelRoutesByPath(routes);
+
+    for (const [path, component] of [
+      ['/system/bid/project/list', '/system/bid/project/project-list.vue'],
+      ['/system/bid/lot/list', '/system/bid/lot/lot-list.vue'],
+      [
+        '/system/bid/registration/list',
+        '/system/bid/registration/registration-list.vue',
+      ],
+    ] as const) {
+      expect(childRoutesByPath.get(path)).toMatchObject({
+        component,
+        path,
+      });
+      expect(childRoutesByPath.get(path)?.children).toBeUndefined();
+    }
+
+    for (const [path, component, activePath] of [
+      [
+        '/system/bid/project/create',
+        '/system/bid/project/project-form.vue',
+        '/system/bid/project/list',
+      ],
+      [
+        '/system/bid/project/edit',
+        '/system/bid/project/project-form.vue',
+        '/system/bid/project/list',
+      ],
+      [
+        '/system/bid/project/detail',
+        '/system/bid/project/project-detail.vue',
+        '/system/bid/project/list',
+      ],
+      [
+        '/system/bid/lot/create',
+        '/system/bid/lot/lot-form.vue',
+        '/system/bid/lot/list',
+      ],
+      [
+        '/system/bid/lot/edit',
+        '/system/bid/lot/lot-form.vue',
+        '/system/bid/lot/list',
+      ],
+      [
+        '/system/bid/lot/detail',
+        '/system/bid/lot/lot-detail.vue',
+        '/system/bid/lot/list',
+      ],
+      [
+        '/system/bid/registration/create',
+        '/system/bid/registration/registration-form.vue',
+        '/system/bid/registration/list',
+      ],
+      [
+        '/system/bid/registration/detail',
+        '/system/bid/registration/registration-detail.vue',
+        '/system/bid/registration/list',
+      ],
+    ] as const) {
+      expect(childRoutesByPath.get(path)).toMatchObject({
+        component,
+        meta: {
+          activePath,
+          hideInMenu: true,
+        },
+        path,
+      });
+    }
+
+    expect(childRoutesByPath.has('/bid-portal/project/list')).toBe(false);
+    expect(childRoutesByPath.has('/bid-portal/project/detail')).toBe(false);
   });
 
   it('maps p1 bid tender submission paths and filters supplier portal menus', () => {
@@ -443,6 +684,18 @@ describe('buildSmartAdminRoutes', () => {
           visibleFlag: true,
         },
         {
+          component: '/system/bid/opening/opening-form.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 780,
+          menuName: 'Opening Create',
+          menuType: 2,
+          parentId: 779,
+          path: '/system/bid/opening/create',
+          sort: 11,
+          visibleFlag: false,
+        },
+        {
           component: '/system/bid/opening/opening-detail.vue',
           disabledFlag: false,
           frameFlag: false,
@@ -465,6 +718,18 @@ describe('buildSmartAdminRoutes', () => {
           path: '/system/bid/evaluation/list',
           sort: 8,
           visibleFlag: true,
+        },
+        {
+          component: '/system/bid/evaluation/evaluation-form.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 788,
+          menuName: 'Evaluation Create',
+          menuType: 2,
+          parentId: 787,
+          path: '/system/bid/evaluation/create',
+          sort: 11,
+          visibleFlag: false,
         },
         {
           component: '/system/bid/evaluation/evaluation-detail.vue',
@@ -491,6 +756,18 @@ describe('buildSmartAdminRoutes', () => {
           visibleFlag: true,
         },
         {
+          component: '/system/bid/award/award-form.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 796,
+          menuName: 'Award Create',
+          menuType: 2,
+          parentId: 795,
+          path: '/system/bid/award/create',
+          sort: 11,
+          visibleFlag: false,
+        },
+        {
           component: '/system/bid/award/award-detail.vue',
           disabledFlag: false,
           frameFlag: false,
@@ -505,16 +782,19 @@ describe('buildSmartAdminRoutes', () => {
       ],
       new Set([
         '/system/bid/award/award-detail.vue',
+        '/system/bid/award/award-form.vue',
         '/system/bid/award/award-list.vue',
         '/system/bid/evaluation/evaluation-detail.vue',
+        '/system/bid/evaluation/evaluation-form.vue',
         '/system/bid/evaluation/evaluation-list.vue',
         '/system/bid/opening/opening-detail.vue',
+        '/system/bid/opening/opening-form.vue',
         '/system/bid/opening/opening-list.vue',
       ]),
     );
 
     expect(routes).toHaveLength(1);
-    expect(routes[0]?.children).toHaveLength(6);
+    expect(routes[0]?.children).toHaveLength(9);
     const childRoutesByPath = new Map(
       routes[0]?.children?.map((route) => [route.path, route]),
     );
@@ -522,6 +802,14 @@ describe('buildSmartAdminRoutes', () => {
     expect(childRoutesByPath.get('/system/bid/opening/list')).toMatchObject({
       component: '/system/bid/opening/opening-list.vue',
       path: '/system/bid/opening/list',
+    });
+    expect(childRoutesByPath.get('/system/bid/opening/create')).toMatchObject({
+      component: '/system/bid/opening/opening-form.vue',
+      meta: {
+        activePath: '/system/bid/opening/list',
+        hideInMenu: true,
+      },
+      path: '/system/bid/opening/create',
     });
     expect(childRoutesByPath.get('/system/bid/opening/detail')).toMatchObject({
       component: '/system/bid/opening/opening-detail.vue',
@@ -536,6 +824,16 @@ describe('buildSmartAdminRoutes', () => {
       path: '/system/bid/evaluation/list',
     });
     expect(
+      childRoutesByPath.get('/system/bid/evaluation/create'),
+    ).toMatchObject({
+      component: '/system/bid/evaluation/evaluation-form.vue',
+      meta: {
+        activePath: '/system/bid/evaluation/list',
+        hideInMenu: true,
+      },
+      path: '/system/bid/evaluation/create',
+    });
+    expect(
       childRoutesByPath.get('/system/bid/evaluation/detail'),
     ).toMatchObject({
       component: '/system/bid/evaluation/evaluation-detail.vue',
@@ -548,6 +846,14 @@ describe('buildSmartAdminRoutes', () => {
     expect(childRoutesByPath.get('/system/bid/award/list')).toMatchObject({
       component: '/system/bid/award/award-list.vue',
       path: '/system/bid/award/list',
+    });
+    expect(childRoutesByPath.get('/system/bid/award/create')).toMatchObject({
+      component: '/system/bid/award/award-form.vue',
+      meta: {
+        activePath: '/system/bid/award/list',
+        hideInMenu: true,
+      },
+      path: '/system/bid/award/create',
     });
     expect(childRoutesByPath.get('/system/bid/award/detail')).toMatchObject({
       component: '/system/bid/award/award-detail.vue',

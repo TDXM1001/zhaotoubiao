@@ -100,12 +100,14 @@ P2 动作命名必须使用资源专属 kebab action：
 
 流程状态继续以 Java 枚举 + 文档码表 + `t_bid_workflow_history.action_code` 为主，不新增流程状态字典。
 
-P2 进入实现前应扩展：
+当前代码中 P2 状态枚举已扩展：
 
 - `BidProjectStatusEnum`：`OPENING_IN_PROGRESS`、`EVALUATING`、`AWARDED`
 - `BidLotStatusEnum`：`OPENED`、`EVALUATING`、`AWARDED`
 
 `BidSubmissionStatusEnum` 当前已有 `OPENED`。P2 第一轮先通过 opening / evaluation / award 表表达后续结果；若门户需要直接按投标状态展示结果，再增加 `EVALUATED`、`AWARDED`、`LOST`。
+
+这不改变 P1 准入判断：状态枚举、`v3.36.0.sql` 和 opening / evaluation / award 模块已经有代码面痕迹，但进入 P2 主体前仍必须补齐 P1 真实链路、附件归属和管理端回归证据。
 
 ## Alternatives Considered
 

@@ -4,6 +4,7 @@ import {
   ATTACHMENT_FILE_CATEGORY_OPTIONS,
   formatBidFileSize,
   getAttachmentCategoryText,
+  hasBidAction,
   isAwardCandidateSubmission,
   isAwardReadyEvaluation,
   isEvaluationReadyLot,
@@ -38,6 +39,33 @@ describe('bid helper options', () => {
     expect(formatBidFileSize(512)).toBe('512 B');
     expect(formatBidFileSize(1536)).toBe('1.5 KB');
     expect(formatBidFileSize(2 * 1024 * 1024)).toBe('2 MB');
+  });
+
+  it('requires both access code and allowed action for bid actions', () => {
+    expect(
+      hasBidAction({
+        accessCode: 'bid:tender:update',
+        accessCodes: ['bid:tender:update'],
+        allowedAction: 'edit-tender',
+        allowedActions: ['edit-tender'],
+      }),
+    ).toBe(true);
+    expect(
+      hasBidAction({
+        accessCode: 'bid:tender:update',
+        accessCodes: ['bid:tender:update'],
+        allowedAction: 'edit-tender',
+        allowedActions: [],
+      }),
+    ).toBe(false);
+    expect(
+      hasBidAction({
+        accessCode: 'bid:tender:update',
+        accessCodes: [],
+        allowedAction: 'edit-tender',
+        allowedActions: ['edit-tender'],
+      }),
+    ).toBe(false);
   });
 
   it('only allows bid-closed lots to be selected for opening creation', () => {
