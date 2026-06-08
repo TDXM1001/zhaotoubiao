@@ -230,6 +230,11 @@ export function parseRouteNumber(value: unknown) {
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
+/** 判断标段是否已进入可创建开标安排的状态 */
+export function isOpeningReadyLot(lot?: { status?: string }) {
+  return lot?.status === 'BID_CLOSED';
+}
+
 /** 格式化招投标附件大小 */
 export function formatBidFileSize(fileSize?: null | number) {
   if (fileSize === null || fileSize === undefined) {

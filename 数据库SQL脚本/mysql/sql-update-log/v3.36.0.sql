@@ -156,10 +156,10 @@ INSERT INTO `t_menu`
 (`menu_id`, `menu_name`, `menu_type`, `parent_id`, `sort`, `path`, `component`, `perms_type`, `api_perms`, `web_perms`, `icon`, `context_menu_id`, `frame_flag`, `frame_url`, `cache_flag`, `visible_flag`, `disabled_flag`, `deleted_flag`, `create_user_id`, `update_user_id`)
 VALUES
 (779, '开标管理', 2, 731, 7, '/system/bid/opening/list', '/system/bid/opening/opening-list.vue', NULL, NULL, NULL, 'lucide:clipboard-list', NULL, 0, NULL, 0, 1, 0, 0, 1, 1),
-(780, '开标新增', 2, 779, 11, '/system/bid/opening/create', '/system/bid/opening/opening-form.vue', NULL, NULL, NULL, NULL, NULL, 0, NULL, 0, 0, 0, 0, 1, 1),
+(780, '创建开标安排', 2, 779, 11, '/system/bid/opening/create', '/system/bid/opening/opening-form.vue', NULL, NULL, NULL, NULL, NULL, 0, NULL, 0, 0, 0, 0, 1, 1),
 (781, '开标详情', 2, 779, 12, '/system/bid/opening/detail', '/system/bid/opening/opening-detail.vue', NULL, NULL, NULL, NULL, NULL, 0, NULL, 0, 0, 0, 0, 1, 1),
 (782, '查询开标', 3, 779, 1, NULL, NULL, 1, 'bid:opening:query', 'bid:opening:query', NULL, 779, 0, NULL, 0, 1, 0, 0, 1, 1),
-(783, '新增开标', 3, 779, 2, NULL, NULL, 1, 'bid:opening:create', 'bid:opening:create', NULL, 779, 0, NULL, 0, 1, 0, 0, 1, 1),
+(783, '创建开标安排', 3, 779, 2, NULL, NULL, 1, 'bid:opening:create', 'bid:opening:create', NULL, 779, 0, NULL, 0, 1, 0, 0, 1, 1),
 (784, '开始开标', 3, 779, 3, NULL, NULL, 1, 'bid:opening:start-opening', 'bid:opening:start-opening', NULL, 779, 0, NULL, 0, 1, 0, 0, 1, 1),
 (785, '完成开标', 3, 779, 4, NULL, NULL, 1, 'bid:opening:complete-opening', 'bid:opening:complete-opening', NULL, 779, 0, NULL, 0, 1, 0, 0, 1, 1),
 (786, '异常关闭开标', 3, 779, 5, NULL, NULL, 1, 'bid:opening:abnormal-close-opening', 'bid:opening:abnormal-close-opening', NULL, 779, 0, NULL, 0, 1, 0, 0, 1, 1),

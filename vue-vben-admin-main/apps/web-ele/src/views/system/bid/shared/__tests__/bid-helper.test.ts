@@ -4,6 +4,7 @@ import {
   ATTACHMENT_FILE_CATEGORY_OPTIONS,
   formatBidFileSize,
   getAttachmentCategoryText,
+  isOpeningReadyLot,
   TENDER_VERSION_TYPE_OPTIONS,
 } from '../bid-helper';
 
@@ -34,5 +35,12 @@ describe('bid helper options', () => {
     expect(formatBidFileSize(512)).toBe('512 B');
     expect(formatBidFileSize(1536)).toBe('1.5 KB');
     expect(formatBidFileSize(2 * 1024 * 1024)).toBe('2 MB');
+  });
+
+  it('only allows bid-closed lots to be selected for opening creation', () => {
+    expect(isOpeningReadyLot({ status: 'BID_CLOSED' })).toBe(true);
+    expect(isOpeningReadyLot({ status: 'BIDDING' })).toBe(false);
+    expect(isOpeningReadyLot({ status: 'OPENED' })).toBe(false);
+    expect(isOpeningReadyLot({})).toBe(false);
   });
 });

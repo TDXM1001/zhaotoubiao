@@ -242,7 +242,7 @@ onMounted(() => {
           type="primary"
           @click="openCreatePage"
         >
-          新增开标
+          创建开标安排
         </ElButton>
       </template>
 
