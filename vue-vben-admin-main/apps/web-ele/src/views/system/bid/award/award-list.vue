@@ -215,7 +215,7 @@ onMounted(() => {
           type="primary"
           @click="openCreatePage"
         >
-          新增定标
+          创建定标记录
         </ElButton>
       </template>
 

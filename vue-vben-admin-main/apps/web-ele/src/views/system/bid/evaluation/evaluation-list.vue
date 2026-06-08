@@ -222,7 +222,7 @@ onMounted(() => {
           type="primary"
           @click="openCreatePage"
         >
-          新增评标
+          创建评标记录
         </ElButton>
       </template>
 
