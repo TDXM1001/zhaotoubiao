@@ -64,6 +64,36 @@ public class BidWorkflowHistoryService {
         this.record(BidBusinessTypeEnum.REGISTRATION, registrationId, projectId, lotId, fromStatus, toStatus, actionCode, operateComment, requestUser, snapshot);
     }
 
+    /**
+     * 记录招标文件版本动作
+     */
+    public void recordTenderAction(Long tenderVersionId,
+                                   Long projectId,
+                                   Long lotId,
+                                   String fromStatus,
+                                   String toStatus,
+                                   String actionCode,
+                                   String operateComment,
+                                   RequestUser requestUser,
+                                   Object snapshot) {
+        this.record(BidBusinessTypeEnum.TENDER_VERSION, tenderVersionId, projectId, lotId, fromStatus, toStatus, actionCode, operateComment, requestUser, snapshot);
+    }
+
+    /**
+     * 记录投标动作
+     */
+    public void recordSubmissionAction(Long submissionId,
+                                       Long projectId,
+                                       Long lotId,
+                                       String fromStatus,
+                                       String toStatus,
+                                       String actionCode,
+                                       String operateComment,
+                                       RequestUser requestUser,
+                                       Object snapshot) {
+        this.record(BidBusinessTypeEnum.SUBMISSION, submissionId, projectId, lotId, fromStatus, toStatus, actionCode, operateComment, requestUser, snapshot);
+    }
+
     private void record(BidBusinessTypeEnum businessType,
                         Long businessId,
                         Long projectId,

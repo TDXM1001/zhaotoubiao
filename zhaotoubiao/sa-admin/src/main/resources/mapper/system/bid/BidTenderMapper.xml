@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.system.bid.tender.dao.BidTenderDao">
+
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.system.bid.tender.domain.vo.BidTenderVO">
+        SELECT t.tender_version_id,
+               t.project_id,
+               p.project_name,
+               t.lot_id,
+               l.lot_code,
+               l.lot_name,
+               t.version_no,
+               t.version_type,
+               t.status,
+               t.current_flag,
+               t.parent_version_id,
+               t.effective_time,
+               t.publish_time,
+               t.summary,
+               t.remark,
+               t.version,
+               t.create_time,
+               t.update_time
+        FROM t_bid_tender_version t
+        INNER JOIN t_bid_project p ON p.project_id = t.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = t.lot_id
+        <where>
+            t.deleted_flag = #{queryForm.deletedFlag}
+            AND p.deleted_flag = 0
+            AND l.deleted_flag = 0
+            <if test="queryForm.keyword != null and queryForm.keyword != ''">
+                AND (
+                    p.project_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR t.summary LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                )
+            </if>
+            <if test="queryForm.projectId != null">
+                AND t.project_id = #{queryForm.projectId}
+            </if>
+            <if test="queryForm.lotId != null">
+                AND t.lot_id = #{queryForm.lotId}
+            </if>
+            <if test="queryForm.versionType != null and queryForm.versionType != ''">
+                AND t.version_type = #{queryForm.versionType}
+            </if>
+            <if test="queryForm.status != null and queryForm.status != ''">
+                AND t.status = #{queryForm.status}
+            </if>
+        </where>
+        ORDER BY t.create_time DESC, t.tender_version_id DESC
+    </select>
+
+    <select id="getDetail" resultType="net.lab1024.sa.admin.module.system.bid.tender.domain.vo.BidTenderVO">
+        SELECT t.tender_version_id,
+               t.project_id,
+               p.project_name,
+               t.lot_id,
+               l.lot_code,
+               l.lot_name,
+               t.version_no,
+               t.version_type,
+               t.status,
+               t.current_flag,
+               t.parent_version_id,
+               t.effective_time,
+               t.publish_time,
+               t.summary,
+               t.remark,
+               t.version,
+               t.create_time,
+               t.update_time
+        FROM t_bid_tender_version t
+        INNER JOIN t_bid_project p ON p.project_id = t.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = t.lot_id
+        WHERE t.tender_version_id = #{tenderVersionId}
+          AND t.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="getActiveByLotId" resultType="net.lab1024.sa.admin.module.system.bid.tender.domain.vo.BidTenderVO">
+        SELECT t.tender_version_id,
+               t.project_id,
+               p.project_name,
+               t.lot_id,
+               l.lot_code,
+               l.lot_name,
+               t.version_no,
+               t.version_type,
+               t.status,
+               t.current_flag,
+               t.parent_version_id,
+               t.effective_time,
+               t.publish_time,
+               t.summary,
+               t.remark,
+               t.version,
+               t.create_time,
+               t.update_time
+        FROM t_bid_tender_version t
+        INNER JOIN t_bid_project p ON p.project_id = t.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = t.lot_id
+        WHERE t.lot_id = #{lotId}
+          AND t.status = 'ACTIVE'
+          AND t.current_flag = 1
+          AND t.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="selectMaxVersionNoByLotId" resultType="java.lang.Integer">
+        SELECT MAX(version_no)
+        FROM t_bid_tender_version
+        WHERE lot_id = #{lotId}
+          AND deleted_flag = 0
+    </select>
+
+    <update id="updateWithVersion">
+        UPDATE t_bid_tender_version
+        <set>
+            <if test="versionType != null">version_type = #{versionType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="currentFlag != null">current_flag = #{currentFlag},</if>
+            <if test="currentFlag == null">current_flag = NULL,</if>
+            <if test="effectiveTime != null">effective_time = #{effectiveTime},</if>
+            <if test="publishUserId != null">publish_user_id = #{publishUserId},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            version = version + 1
+        </set>
+        WHERE tender_version_id = #{tenderVersionId}
+          AND version = #{version}
+          AND deleted_flag = 0
+    </update>
+
+    <update id="supersedeCurrentByLotId">
+        UPDATE t_bid_tender_version
+        SET status = 'SUPERSEDED',
+            current_flag = NULL,
+            update_user_id = #{updateUserId},
+            version = version + 1
+        WHERE lot_id = #{lotId}
+          AND current_flag = 1
+          AND status = 'ACTIVE'
+          AND deleted_flag = 0
+          <if test="excludeTenderVersionId != null">
+            AND tender_version_id != #{excludeTenderVersionId}
+          </if>
+    </update>
+</mapper>

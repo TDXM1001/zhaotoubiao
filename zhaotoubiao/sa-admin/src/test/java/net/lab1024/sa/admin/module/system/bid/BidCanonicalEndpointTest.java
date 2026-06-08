@@ -7,6 +7,10 @@ import net.lab1024.sa.admin.module.system.bid.project.controller.BidProjectContr
 import net.lab1024.sa.admin.module.system.bid.project.domain.form.BidProjectActionForm;
 import net.lab1024.sa.admin.module.system.bid.registration.controller.BidRegistrationController;
 import net.lab1024.sa.admin.module.system.bid.registration.domain.form.BidRegistrationActionForm;
+import net.lab1024.sa.admin.module.system.bid.submission.controller.BidSubmissionController;
+import net.lab1024.sa.admin.module.system.bid.submission.domain.form.BidSubmissionActionForm;
+import net.lab1024.sa.admin.module.system.bid.tender.controller.BidTenderController;
+import net.lab1024.sa.admin.module.system.bid.tender.domain.form.BidTenderActionForm;
 import net.lab1024.sa.base.common.domain.ResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,6 +87,32 @@ class BidCanonicalEndpointTest {
     }
 
     @Test
+    void 招标文件接口应只提供资源化路径() {
+        assertPost(BidTenderController.class, "/bid/tenders/search", "bid:tender:query");
+        assertGet(BidTenderController.class, "/bid/tenders/{tenderVersionId}", "bid:tender:query");
+        assertGet(BidTenderController.class, "/bid/lots/{lotId}/tenders/active", "bid:tender:query");
+        assertPost(BidTenderController.class, "/bid/tenders", "bid:tender:create");
+        assertPut(BidTenderController.class, "/bid/tenders/{tenderVersionId}", "bid:tender:update");
+        assertPost(BidTenderController.class, "/bid/tenders/{tenderVersionId}/actions/publish-tender", "bid:tender:publish-tender");
+        assertPost(BidTenderController.class, "/bid/tenders/{tenderVersionId}/actions/clarify-tender", "bid:tender:clarify-tender");
+        assertPost(BidTenderController.class, "/bid/tenders/{tenderVersionId}/actions/withdraw-tender", "bid:tender:withdraw-tender");
+        assertGet(BidTenderController.class, "/bid/tenders/{tenderVersionId}/attachments/{attachmentId}/download", "bid:tender:query");
+        assertGet(BidTenderController.class, "/bid/tenders/{tenderVersionId}/attachments/{attachmentId}/preview-url", "bid:tender:query");
+    }
+
+    @Test
+    void 投标提交接口应只提供资源化路径() {
+        assertPost(BidSubmissionController.class, "/bid/submissions/search", "bid:submission:query");
+        assertGet(BidSubmissionController.class, "/bid/submissions/{submissionId}", "bid:submission:query");
+        assertGet(BidSubmissionController.class, "/bid/registrations/{registrationId}/submission", "bid:submission:query");
+        assertPost(BidSubmissionController.class, "/bid/submissions", "bid:submission:create");
+        assertPost(BidSubmissionController.class, "/bid/submissions/{submissionId}/actions/submit-bid", "bid:submission:submit-bid");
+        assertPost(BidSubmissionController.class, "/bid/submissions/{submissionId}/actions/withdraw-bid", "bid:submission:withdraw-bid");
+        assertGet(BidSubmissionController.class, "/bid/submissions/{submissionId}/attachments/{attachmentId}/download", "bid:submission:download");
+        assertGet(BidSubmissionController.class, "/bid/submissions/{submissionId}/attachments/{attachmentId}/preview-url", "bid:submission:download");
+    }
+
+    @Test
     void 资源化动作接口应拒绝路径ID与表单ID不一致() {
         BidProjectActionForm projectActionForm = new BidProjectActionForm();
         projectActionForm.setProjectId(2L);
@@ -101,6 +131,18 @@ class BidCanonicalEndpointTest {
         registrationActionForm.setVersion(1);
         ResponseDTO<String> registrationResult = new BidRegistrationController().approveResource(1L, registrationActionForm);
         assertFalse(registrationResult.getOk(), "报名路径ID与表单ID不一致时应返回参数错误");
+
+        BidTenderActionForm tenderActionForm = new BidTenderActionForm();
+        tenderActionForm.setTenderVersionId(2L);
+        tenderActionForm.setVersion(1);
+        ResponseDTO<String> tenderResult = new BidTenderController().publishResource(1L, tenderActionForm);
+        assertFalse(tenderResult.getOk(), "招标文件路径ID与表单ID不一致时应返回参数错误");
+
+        BidSubmissionActionForm submissionActionForm = new BidSubmissionActionForm();
+        submissionActionForm.setSubmissionId(2L);
+        submissionActionForm.setVersion(1);
+        ResponseDTO<String> submissionResult = new BidSubmissionController().withdrawResource(1L, submissionActionForm);
+        assertFalse(submissionResult.getOk(), "投标路径ID与表单ID不一致时应返回参数错误");
     }
 
     private void assertGet(Class<?> controllerClass, String path, String permission) {

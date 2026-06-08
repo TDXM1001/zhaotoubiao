@@ -10,7 +10,10 @@ public enum BidBusinessTypeEnum {
 
     PROJECT("PROJECT"),
     LOT("LOT"),
-    REGISTRATION("REGISTRATION");
+    REGISTRATION("REGISTRATION"),
+    TENDER_VERSION("TENDER_VERSION"),
+    SUBMISSION("SUBMISSION"),
+    SUBMISSION_VERSION("SUBMISSION_VERSION");
 
     private final String code;
 

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.system.bid.portal.dao.BidPortalDao">
+
+    <sql id="visibleProjectCondition">
+        p.deleted_flag = 0
+        AND p.status = 'PUBLISHED'
+        AND EXISTS (
+            SELECT 1
+            FROM t_bid_lot l
+            INNER JOIN t_bid_tender_version tv
+              ON tv.lot_id = l.lot_id
+             AND tv.status = 'ACTIVE'
+             AND tv.current_flag = 1
+             AND tv.deleted_flag = 0
+            WHERE l.project_id = p.project_id
+              AND l.status = 'BIDDING'
+              AND l.deleted_flag = 0
+        )
+    </sql>
+
+    <select id="queryVisibleProjectPage" resultType="net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalProjectVO">
+        SELECT p.project_id,
+               p.project_code,
+               p.project_name,
+               p.project_type,
+               p.procurement_mode,
+               p.budget_amount,
+               p.publish_time,
+               (
+                   SELECT COUNT(1)
+                   FROM t_bid_lot l
+                   INNER JOIN t_bid_tender_version tv
+                     ON tv.lot_id = l.lot_id
+                    AND tv.status = 'ACTIVE'
+                    AND tv.current_flag = 1
+                    AND tv.deleted_flag = 0
+                   WHERE l.project_id = p.project_id
+                     AND l.status = 'BIDDING'
+                     AND l.deleted_flag = 0
+               ) AS lot_count
+        FROM t_bid_project p
+        <where>
+            <include refid="visibleProjectCondition"/>
+            <if test="queryForm.keyword != null and queryForm.keyword != ''">
+                AND (
+                    p.project_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR p.project_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY p.publish_time DESC, p.project_id DESC
+    </select>
+
+    <select id="getVisibleProject" resultType="net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalProjectVO">
+        SELECT p.project_id,
+               p.project_code,
+               p.project_name,
+               p.project_type,
+               p.procurement_mode,
+               p.budget_amount,
+               p.publish_time
+        FROM t_bid_project p
+        WHERE p.project_id = #{projectId}
+          AND <include refid="visibleProjectCondition"/>
+        LIMIT 1
+    </select>
+
+    <select id="listVisibleLots" resultType="net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalLotVO">
+        SELECT l.lot_id,
+               l.lot_code,
+               l.lot_name,
+               l.lot_scope,
+               l.registration_start_time,
+               l.registration_end_time,
+               l.bid_start_time,
+               l.bid_end_time,
+               tv.tender_version_id,
+               tv.version_no AS tender_version_no,
+               tv.summary AS tender_summary
+        FROM t_bid_lot l
+        INNER JOIN t_bid_tender_version tv
+          ON tv.lot_id = l.lot_id
+         AND tv.status = 'ACTIVE'
+         AND tv.current_flag = 1
+         AND tv.deleted_flag = 0
+        WHERE l.project_id = #{projectId}
+          AND l.status = 'BIDDING'
+          AND l.deleted_flag = 0
+        ORDER BY l.lot_no ASC, l.lot_id ASC
+    </select>
+
+    <select id="getRegistration" resultType="net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRegistrationVO">
+        SELECT r.registration_id,
+               r.project_id,
+               p.project_name,
+               r.lot_id,
+               l.lot_name,
+               r.supplier_name_snapshot,
+               r.supplier_credit_code,
+               r.status,
+               r.submit_time,
+               r.qualified_time,
+               r.reject_reason,
+               r.cancel_reason,
+               r.version
+        FROM t_bid_registration r
+        INNER JOIN t_bid_project p ON p.project_id = r.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = r.lot_id
+        WHERE r.registration_id = #{registrationId}
+          AND r.supplier_credit_code = #{supplierCreditCode}
+          AND r.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="getSubmission" resultType="net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalSubmissionVO">
+        SELECT s.submission_id,
+               sv.submission_version_id AS latest_submission_version_id,
+               s.registration_id,
+               s.project_id,
+               p.project_name,
+               s.lot_id,
+               l.lot_name,
+               s.supplier_name_snapshot,
+               s.supplier_credit_code,
+               s.status,
+               s.latest_version_no,
+               s.latest_submit_time,
+               s.receipt_no,
+               sv.price_amount,
+               sv.contact_name,
+               sv.contact_phone,
+               s.withdraw_reason,
+               s.version
+        FROM t_bid_submission s
+        INNER JOIN t_bid_project p ON p.project_id = s.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = s.lot_id
+        LEFT JOIN t_bid_submission_version sv
+          ON sv.submission_id = s.submission_id
+         AND sv.version_no = s.latest_version_no
+         AND sv.deleted_flag = 0
+        WHERE s.submission_id = #{submissionId}
+          AND s.supplier_credit_code = #{supplierCreditCode}
+          AND s.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+</mapper>

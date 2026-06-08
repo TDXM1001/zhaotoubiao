@@ -1,0 +1,30 @@
+package net.lab1024.sa.admin.module.system.bid.submission.domain.form;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+/**
+ * 投标主记录创建表单
+ *
+ * @author Codex
+ * @date 2026-06-08
+ */
+@Data
+public class BidSubmissionCreateForm {
+
+    @Schema(description = "项目ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "项目ID不能为空")
+    private Long projectId;
+
+    @Schema(description = "标段ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "标段ID不能为空")
+    private Long lotId;
+
+    @Schema(description = "报名ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "报名ID不能为空")
+    private Long registrationId;
+
+    @Schema(description = "备注")
+    private String remark;
+}

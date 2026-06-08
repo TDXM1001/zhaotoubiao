@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.system.bid.submission.dao.BidSubmissionDao">
+
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.system.bid.submission.domain.vo.BidSubmissionVO">
+        SELECT s.submission_id,
+               s.project_id,
+               p.project_name,
+               s.lot_id,
+               l.lot_code,
+               l.lot_name,
+               s.registration_id,
+               s.supplier_enterprise_id,
+               s.supplier_name_snapshot,
+               s.supplier_credit_code,
+               s.status,
+               s.latest_version_no,
+               s.latest_submit_time,
+               s.receipt_no,
+               sv.price_amount,
+               sv.contact_name,
+               sv.contact_phone,
+               sv.file_manifest_json,
+               s.withdraw_time,
+               s.withdraw_reason,
+               s.remark,
+               s.version,
+               s.create_time,
+               s.update_time
+        FROM t_bid_submission s
+        INNER JOIN t_bid_project p ON p.project_id = s.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = s.lot_id
+        LEFT JOIN t_bid_submission_version sv
+          ON sv.submission_id = s.submission_id
+         AND sv.version_no = s.latest_version_no
+         AND sv.deleted_flag = 0
+        <where>
+            s.deleted_flag = #{queryForm.deletedFlag}
+            AND p.deleted_flag = 0
+            AND l.deleted_flag = 0
+            <if test="queryForm.keyword != null and queryForm.keyword != ''">
+                AND (
+                    p.project_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR s.supplier_name_snapshot LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR s.supplier_credit_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR s.receipt_no LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                )
+            </if>
+            <if test="queryForm.projectId != null">
+                AND s.project_id = #{queryForm.projectId}
+            </if>
+            <if test="queryForm.lotId != null">
+                AND s.lot_id = #{queryForm.lotId}
+            </if>
+            <if test="queryForm.registrationId != null">
+                AND s.registration_id = #{queryForm.registrationId}
+            </if>
+            <if test="queryForm.supplierEnterpriseId != null">
+                AND s.supplier_enterprise_id = #{queryForm.supplierEnterpriseId}
+            </if>
+            <if test="queryForm.status != null and queryForm.status != ''">
+                AND s.status = #{queryForm.status}
+            </if>
+        </where>
+        ORDER BY s.latest_submit_time DESC, s.create_time DESC, s.submission_id DESC
+    </select>
+
+    <select id="getDetail" resultType="net.lab1024.sa.admin.module.system.bid.submission.domain.vo.BidSubmissionVO">
+        SELECT s.submission_id,
+               s.project_id,
+               p.project_name,
+               s.lot_id,
+               l.lot_code,
+               l.lot_name,
+               s.registration_id,
+               s.supplier_enterprise_id,
+               s.supplier_name_snapshot,
+               s.supplier_credit_code,
+               s.status,
+               sv.submission_version_id AS latest_submission_version_id,
+               s.latest_version_no,
+               s.latest_submit_time,
+               s.receipt_no,
+               sv.price_amount,
+               sv.contact_name,
+               sv.contact_phone,
+               sv.file_manifest_json,
+               s.withdraw_time,
+               s.withdraw_reason,
+               s.remark,
+               s.version,
+               s.create_time,
+               s.update_time
+        FROM t_bid_submission s
+        INNER JOIN t_bid_project p ON p.project_id = s.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = s.lot_id
+        LEFT JOIN t_bid_submission_version sv
+          ON sv.submission_id = s.submission_id
+         AND sv.version_no = s.latest_version_no
+         AND sv.deleted_flag = 0
+        WHERE s.submission_id = #{submissionId}
+          AND s.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="getByRegistrationId" resultType="net.lab1024.sa.admin.module.system.bid.submission.domain.vo.BidSubmissionVO">
+        SELECT s.submission_id,
+               s.project_id,
+               p.project_name,
+               s.lot_id,
+               l.lot_code,
+               l.lot_name,
+               s.registration_id,
+               s.supplier_enterprise_id,
+               s.supplier_name_snapshot,
+               s.supplier_credit_code,
+               s.status,
+               sv.submission_version_id AS latest_submission_version_id,
+               s.latest_version_no,
+               s.latest_submit_time,
+               s.receipt_no,
+               sv.price_amount,
+               sv.contact_name,
+               sv.contact_phone,
+               sv.file_manifest_json,
+               s.withdraw_time,
+               s.withdraw_reason,
+               s.remark,
+               s.version,
+               s.create_time,
+               s.update_time
+        FROM t_bid_submission s
+        INNER JOIN t_bid_project p ON p.project_id = s.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = s.lot_id
+        LEFT JOIN t_bid_submission_version sv
+          ON sv.submission_id = s.submission_id
+         AND sv.version_no = s.latest_version_no
+         AND sv.deleted_flag = 0
+        WHERE s.registration_id = #{registrationId}
+          AND s.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <update id="updateWithVersion">
+        UPDATE t_bid_submission
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="latestVersionNo != null">latest_version_no = #{latestVersionNo},</if>
+            <if test="latestSubmitTime != null">latest_submit_time = #{latestSubmitTime},</if>
+            <if test="receiptNo != null">receipt_no = #{receiptNo},</if>
+            <if test="withdrawTime != null">withdraw_time = #{withdrawTime},</if>
+            <if test="withdrawReason != null">withdraw_reason = #{withdrawReason},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            version = version + 1
+        </set>
+        WHERE submission_id = #{submissionId}
+          AND version = #{version}
+          AND deleted_flag = 0
+    </update>
+
+    <update id="disableEffectiveVersions">
+        UPDATE t_bid_submission_version
+        SET is_effective = 0
+        WHERE submission_id = #{submissionId}
+          AND is_effective = 1
+          AND deleted_flag = 0
+    </update>
+
+    <insert id="insertSubmissionVersion"
+            useGeneratedKeys="true"
+            keyProperty="submissionVersionId"
+            parameterType="net.lab1024.sa.admin.module.system.bid.submission.domain.entity.BidSubmissionVersionEntity">
+        INSERT INTO t_bid_submission_version (
+            submission_id,
+            version_no,
+            receipt_no,
+            submit_time,
+            submit_user_id,
+            price_amount,
+            contact_name,
+            contact_phone,
+            file_manifest_json,
+            is_effective,
+            deleted_flag,
+            create_user_id
+        ) VALUES (
+            #{submissionId},
+            #{versionNo},
+            #{receiptNo},
+            #{submitTime},
+            #{submitUserId},
+            #{priceAmount},
+            #{contactName},
+            #{contactPhone},
+            #{fileManifestJson},
+            #{effective},
+            #{deletedFlag},
+            #{createUserId}
+        )
+    </insert>
+</mapper>
