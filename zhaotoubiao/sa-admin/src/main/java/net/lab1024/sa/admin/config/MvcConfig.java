@@ -2,6 +2,7 @@ package net.lab1024.sa.admin.config;
 
 import jakarta.annotation.Resource;
 import net.lab1024.sa.admin.interceptor.AdminInterceptor;
+import net.lab1024.sa.admin.interceptor.BidPortalInterceptor;
 import net.lab1024.sa.base.config.SwaggerConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -23,13 +24,25 @@ public class MvcConfig implements WebMvcConfigurer {
     @Resource
     private AdminInterceptor adminInterceptor;
 
+    @Resource
+    private BidPortalInterceptor bidPortalInterceptor;
+
 
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminInterceptor)
                 .excludePathPatterns(SwaggerConfig.SWAGGER_WHITELIST)
+                .excludePathPatterns("/bid/portal/**")
                 .addPathPatterns("/**");
+
+        registry.addInterceptor(bidPortalInterceptor)
+                .addPathPatterns("/bid/portal/auth/me")
+                .addPathPatterns("/bid/portal/auth/logout")
+                .addPathPatterns("/bid/portal/registrations")
+                .addPathPatterns("/bid/portal/registrations/**")
+                .addPathPatterns("/bid/portal/submissions")
+                .addPathPatterns("/bid/portal/submissions/**");
     }
 
     @Override

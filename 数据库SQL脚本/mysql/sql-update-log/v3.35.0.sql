@@ -130,7 +130,30 @@ CREATE TABLE IF NOT EXISTS `t_bid_attachment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='招投标业务附件关联表' ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
--- 5. 业务字典定义
+-- 5. 供应商门户账号
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS `t_bid_portal_account` (
+  `portal_account_id` bigint NOT NULL AUTO_INCREMENT COMMENT '供应商门户账号ID',
+  `supplier_enterprise_id` bigint DEFAULT NULL COMMENT '供应商企业ID，关联 t_oa_enterprise.enterprise_id',
+  `supplier_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '供应商名称',
+  `supplier_credit_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '统一社会信用代码',
+  `login_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '门户登录账号',
+  `login_pwd` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '门户登录密码密文',
+  `contact_name` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '联系人',
+  `contact_phone` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '联系人电话',
+  `disabled_flag` tinyint(1) NOT NULL DEFAULT 0 COMMENT '禁用标记 0-启用 1-禁用',
+  `deleted_flag` tinyint(1) NOT NULL DEFAULT 0 COMMENT '删除标记 0-未删除 1-已删除',
+  `last_login_time` datetime DEFAULT NULL COMMENT '最近登录时间',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`portal_account_id`) USING BTREE,
+  UNIQUE KEY `uk_login_name` (`login_name`) USING BTREE,
+  UNIQUE KEY `uk_supplier_credit_code` (`supplier_credit_code`) USING BTREE,
+  KEY `idx_supplier_enterprise_id` (`supplier_enterprise_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='招投标供应商门户账号表' ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- 6. 业务字典定义
 -- ----------------------------
 INSERT INTO `t_dict` (`dict_name`, `dict_code`, `remark`, `disabled_flag`)
 VALUES ('招标文件版本类型', 'BID_TENDER_VERSION_TYPE', '招标文件、公告、澄清和更正版本类型', 0)
@@ -147,7 +170,7 @@ ON DUPLICATE KEY UPDATE
   `disabled_flag` = VALUES(`disabled_flag`);
 
 -- ----------------------------
--- 6. 招标文件版本类型字典项
+-- 7. 招标文件版本类型字典项
 -- ----------------------------
 INSERT INTO `t_dict_data` (`dict_id`, `data_value`, `data_label`, `data_style`, `remark`, `sort_order`, `disabled_flag`)
 SELECT d.`dict_id`, 'TENDER_MAIN', '招标文件', 'primary', '招标文件主版本', 400, 0
@@ -194,7 +217,7 @@ WHERE d.`dict_code` = 'BID_TENDER_VERSION_TYPE'
   );
 
 -- ----------------------------
--- 7. 招投标附件分类字典项
+-- 8. 招投标附件分类字典项
 -- ----------------------------
 INSERT INTO `t_dict_data` (`dict_id`, `data_value`, `data_label`, `data_style`, `remark`, `sort_order`, `disabled_flag`)
 SELECT d.`dict_id`, 'TENDER_MAIN', '招标文件正文', 'primary', '招标文件版本主附件', 600, 0
@@ -263,7 +286,7 @@ WHERE d.`dict_code` = 'BID_ATTACHMENT_FILE_CATEGORY'
   );
 
 -- ----------------------------
--- 8. 主系统菜单、隐藏页面与功能点
+-- 9. 主系统菜单、隐藏页面与功能点
 -- ----------------------------
 INSERT INTO `t_menu`
 (`menu_id`, `menu_name`, `menu_type`, `parent_id`, `sort`, `path`, `component`, `perms_type`, `api_perms`, `web_perms`, `icon`, `context_menu_id`, `frame_flag`, `frame_url`, `cache_flag`, `visible_flag`, `disabled_flag`, `deleted_flag`, `create_user_id`, `update_user_id`)
@@ -309,7 +332,7 @@ ON DUPLICATE KEY UPDATE
   `update_user_id` = VALUES(`update_user_id`);
 
 -- ----------------------------
--- 9. 默认管理员角色授权
+-- 10. 默认管理员角色授权
 -- ----------------------------
 INSERT INTO `t_role_menu` (`role_id`, `menu_id`)
 SELECT 1, tmp.`menu_id`

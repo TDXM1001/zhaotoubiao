@@ -1,7 +1,11 @@
 package net.lab1024.sa.admin.module.system.bid;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import jakarta.validation.constraints.NotBlank;
 import net.lab1024.sa.admin.module.system.bid.portal.controller.BidPortalController;
+import net.lab1024.sa.admin.module.system.bid.portal.domain.form.BidPortalRegistrationCreateForm;
+import net.lab1024.sa.admin.module.system.bid.portal.domain.form.BidPortalSubmissionActionForm;
+import net.lab1024.sa.admin.module.system.bid.portal.domain.form.BidPortalSubmissionCreateForm;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalProjectVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRegistrationVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalSubmissionVO;
@@ -26,6 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class BidPortalContractTest {
 
     @Test
+    void 门户必须提供独立登录态接口() {
+        assertEndpoint("/bid/portal/auth/register", PostMapping.class);
+        assertEndpoint("/bid/portal/auth/login", PostMapping.class);
+        assertEndpoint("/bid/portal/auth/logout", PostMapping.class);
+        assertEndpoint("/bid/portal/auth/me", GetMapping.class);
+    }
+
+    @Test
     void 门户接口必须落在独立路径下且不复用内部权限码() {
         assertEndpoint("/bid/portal/projects/search", PostMapping.class);
         assertEndpoint("/bid/portal/projects/{projectId}", GetMapping.class);
@@ -44,9 +56,22 @@ class BidPortalContractTest {
         assertNoAllowedActions(BidPortalSubmissionVO.class);
     }
 
+    @Test
+    void 门户业务表单不得强制客户端提交供应商身份字段() throws NoSuchFieldException {
+        assertNoNotBlank(BidPortalRegistrationCreateForm.class, "supplierNameSnapshot");
+        assertNoNotBlank(BidPortalRegistrationCreateForm.class, "supplierCreditCode");
+        assertNoNotBlank(BidPortalSubmissionCreateForm.class, "supplierCreditCode");
+        assertNoNotBlank(BidPortalSubmissionActionForm.class, "supplierCreditCode");
+    }
+
     private void assertNoAllowedActions(Class<?> voClass) {
         assertFalse(Arrays.stream(voClass.getDeclaredFields())
                 .anyMatch(field -> "allowedActions".equals(field.getName())));
+    }
+
+    private void assertNoNotBlank(Class<?> formClass, String fieldName) throws NoSuchFieldException {
+        assertFalse(formClass.getDeclaredField(fieldName).isAnnotationPresent(NotBlank.class),
+                "门户供应商身份应从登录态获取，不应强制客户端提交：" + formClass.getSimpleName() + "." + fieldName);
     }
 
     private <T extends Annotation> void assertEndpoint(String path, Class<T> mappingClass) {

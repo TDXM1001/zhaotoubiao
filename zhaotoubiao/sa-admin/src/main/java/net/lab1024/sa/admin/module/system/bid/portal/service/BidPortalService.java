@@ -13,6 +13,7 @@ import net.lab1024.sa.admin.module.system.bid.portal.domain.form.BidPortalSubmis
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalLotVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalProjectVO;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRegistrationVO;
+import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalRequestUser;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalSubmissionVO;
 import net.lab1024.sa.admin.module.system.bid.registration.domain.form.BidRegistrationAddForm;
 import net.lab1024.sa.admin.module.system.bid.registration.service.BidRegistrationService;
@@ -80,7 +81,12 @@ public class BidPortalService {
     /**
      * 门户提交报名
      */
-    public ResponseDTO<String> createRegistration(BidPortalRegistrationCreateForm createForm) {
+    public ResponseDTO<String> createRegistration(BidPortalRegistrationCreateForm createForm, BidPortalRequestUser requestUser) {
+        ResponseDTO<String> loginCheck = checkLogin(requestUser);
+        if (!loginCheck.getOk()) {
+            return loginCheck;
+        }
+        fillSupplier(createForm, requestUser);
         BidRegistrationAddForm addForm = SmartBeanUtil.copy(createForm, BidRegistrationAddForm.class);
         return bidRegistrationService.add(addForm);
     }
@@ -88,8 +94,12 @@ public class BidPortalService {
     /**
      * 查询当前供应商报名详情
      */
-    public ResponseDTO<BidPortalRegistrationVO> getRegistration(Long registrationId, String supplierCreditCode) {
-        BidPortalRegistrationVO registrationVO = bidPortalDao.getRegistration(registrationId, normalizeSupplierCreditCode(supplierCreditCode));
+    public ResponseDTO<BidPortalRegistrationVO> getRegistration(Long registrationId, BidPortalRequestUser requestUser) {
+        ResponseDTO<String> loginCheck = checkLogin(requestUser);
+        if (!loginCheck.getOk()) {
+            return ResponseDTO.error(loginCheck);
+        }
+        BidPortalRegistrationVO registrationVO = bidPortalDao.getRegistration(registrationId, requestUser.getSupplierCreditCode());
         if (registrationVO == null) {
             return ResponseDTO.error(UserErrorCode.DATA_NOT_EXIST);
         }
@@ -99,8 +109,13 @@ public class BidPortalService {
     /**
      * 门户创建投标主记录
      */
-    public ResponseDTO<String> createSubmission(BidPortalSubmissionCreateForm createForm) {
-        ResponseDTO<BidPortalRegistrationVO> registrationResult = getRegistration(createForm.getRegistrationId(), createForm.getSupplierCreditCode());
+    public ResponseDTO<String> createSubmission(BidPortalSubmissionCreateForm createForm, BidPortalRequestUser requestUser) {
+        ResponseDTO<String> loginCheck = checkLogin(requestUser);
+        if (!loginCheck.getOk()) {
+            return loginCheck;
+        }
+        createForm.setSupplierCreditCode(requestUser.getSupplierCreditCode());
+        ResponseDTO<BidPortalRegistrationVO> registrationResult = getRegistration(createForm.getRegistrationId(), requestUser);
         if (!registrationResult.getOk()) {
             return ResponseDTO.error(registrationResult);
         }
@@ -112,8 +127,12 @@ public class BidPortalService {
     /**
      * 查询当前供应商投标详情
      */
-    public ResponseDTO<BidPortalSubmissionVO> getSubmission(Long submissionId, String supplierCreditCode) {
-        BidPortalSubmissionVO submissionVO = bidPortalDao.getSubmission(submissionId, normalizeSupplierCreditCode(supplierCreditCode));
+    public ResponseDTO<BidPortalSubmissionVO> getSubmission(Long submissionId, BidPortalRequestUser requestUser) {
+        ResponseDTO<String> loginCheck = checkLogin(requestUser);
+        if (!loginCheck.getOk()) {
+            return ResponseDTO.error(loginCheck);
+        }
+        BidPortalSubmissionVO submissionVO = bidPortalDao.getSubmission(submissionId, requestUser.getSupplierCreditCode());
         if (submissionVO == null) {
             return ResponseDTO.error(UserErrorCode.DATA_NOT_EXIST);
         }
@@ -125,8 +144,13 @@ public class BidPortalService {
     /**
      * 门户提交投标
      */
-    public ResponseDTO<String> submitBid(BidPortalSubmissionSubmitForm submitForm) {
-        ResponseDTO<BidPortalSubmissionVO> submissionResult = getSubmission(submitForm.getSubmissionId(), submitForm.getSupplierCreditCode());
+    public ResponseDTO<String> submitBid(BidPortalSubmissionSubmitForm submitForm, BidPortalRequestUser requestUser) {
+        ResponseDTO<String> loginCheck = checkLogin(requestUser);
+        if (!loginCheck.getOk()) {
+            return loginCheck;
+        }
+        submitForm.setSupplierCreditCode(requestUser.getSupplierCreditCode());
+        ResponseDTO<BidPortalSubmissionVO> submissionResult = getSubmission(submitForm.getSubmissionId(), requestUser);
         if (!submissionResult.getOk()) {
             return ResponseDTO.error(submissionResult);
         }
@@ -138,8 +162,13 @@ public class BidPortalService {
     /**
      * 门户撤回投标
      */
-    public ResponseDTO<String> withdrawBid(BidPortalSubmissionActionForm actionForm) {
-        ResponseDTO<BidPortalSubmissionVO> submissionResult = getSubmission(actionForm.getSubmissionId(), actionForm.getSupplierCreditCode());
+    public ResponseDTO<String> withdrawBid(BidPortalSubmissionActionForm actionForm, BidPortalRequestUser requestUser) {
+        ResponseDTO<String> loginCheck = checkLogin(requestUser);
+        if (!loginCheck.getOk()) {
+            return loginCheck;
+        }
+        actionForm.setSupplierCreditCode(requestUser.getSupplierCreditCode());
+        ResponseDTO<BidPortalSubmissionVO> submissionResult = getSubmission(actionForm.getSubmissionId(), requestUser);
         if (!submissionResult.getOk()) {
             return ResponseDTO.error(submissionResult);
         }
@@ -148,7 +177,22 @@ public class BidPortalService {
         return bidSubmissionService.withdraw(internalForm);
     }
 
-    private String normalizeSupplierCreditCode(String supplierCreditCode) {
-        return StringUtils.upperCase(StringUtils.trim(supplierCreditCode));
+    private void fillSupplier(BidPortalRegistrationCreateForm createForm, BidPortalRequestUser requestUser) {
+        createForm.setSupplierEnterpriseId(requestUser.getSupplierEnterpriseId());
+        createForm.setSupplierNameSnapshot(requestUser.getSupplierName());
+        createForm.setSupplierCreditCode(requestUser.getSupplierCreditCode());
+        if (StringUtils.isBlank(createForm.getContactName())) {
+            createForm.setContactName(requestUser.getContactName());
+        }
+        if (StringUtils.isBlank(createForm.getContactPhone())) {
+            createForm.setContactPhone(requestUser.getContactPhone());
+        }
+    }
+
+    private ResponseDTO<String> checkLogin(BidPortalRequestUser requestUser) {
+        if (requestUser == null) {
+            return ResponseDTO.error(UserErrorCode.LOGIN_STATE_INVALID);
+        }
+        return ResponseDTO.ok();
     }
 }

@@ -22,15 +22,13 @@ public class BidPortalRegistrationCreateForm {
     @NotNull(message = "标段ID不能为空")
     private Long lotId;
 
-    @Schema(description = "供应商企业ID")
+    @Schema(description = "供应商企业ID，由门户登录态写入")
     private Long supplierEnterpriseId;
 
-    @Schema(description = "供应商名称", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "供应商名称不能为空")
+    @Schema(description = "供应商名称，由门户登录态写入")
     private String supplierNameSnapshot;
 
-    @Schema(description = "统一社会信用代码", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "统一社会信用代码不能为空")
+    @Schema(description = "统一社会信用代码，由门户登录态写入")
     private String supplierCreditCode;
 
     @Schema(description = "联系人")
