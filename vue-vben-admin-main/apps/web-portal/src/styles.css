@@ -1,8 +1,8 @@
 :root {
-  color: #1f2937;
-  background: #f5f7fb;
   font-family:
     Inter, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  color: #1f2937;
+  background: #f5f7fb;
 }
 
 * {
@@ -10,8 +10,8 @@
 }
 
 body {
-  margin: 0;
   min-width: 320px;
+  margin: 0;
 }
 
 a {
@@ -31,9 +31,9 @@ a {
   top: 0;
   z-index: 10;
   display: flex;
+  gap: 24px;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
   min-height: 64px;
   padding: 0 32px;
   background: rgb(255 255 255 / 92%);
@@ -43,8 +43,8 @@ a {
 
 .portal-shell__brand {
   display: inline-flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   font-size: 18px;
   font-weight: 700;
 }
@@ -55,15 +55,15 @@ a {
   justify-content: center;
   width: 32px;
   height: 32px;
-  color: #ffffff;
+  color: #fff;
   background: #155eef;
   border-radius: 6px;
 }
 
 .portal-shell__nav {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
 
 .portal-shell__nav a {
@@ -79,8 +79,8 @@ a {
 
 .portal-shell__main {
   width: min(1180px, calc(100% - 32px));
-  margin: 0 auto;
   padding: 24px 0 40px;
+  margin: 0 auto;
 }
 
 .portal-page {
@@ -91,9 +91,9 @@ a {
 
 .portal-page__toolbar {
   display: flex;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
 }
 
 .portal-page__title {
@@ -109,7 +109,7 @@ a {
 }
 
 .portal-card {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
 }
@@ -128,8 +128,8 @@ a {
 
 @media (max-width: 640px) {
   .portal-shell__header {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
     padding: 14px 16px;
   }
 
@@ -144,8 +144,8 @@ a {
   }
 
   .portal-page__toolbar {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
   }
 
   .portal-table-footer {

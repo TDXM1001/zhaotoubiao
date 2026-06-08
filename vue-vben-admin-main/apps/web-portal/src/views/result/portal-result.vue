@@ -26,7 +26,7 @@ defineOptions({ name: 'PortalResult' });
 const route = useRoute();
 const router = useRouter();
 const loading = ref(false);
-const result = ref<null | BidPortalApi.PortalResultItem>(null);
+const result = ref<BidPortalApi.PortalResultItem | null>(null);
 const lotId = computed(() => parseRouteNumber(route.query.lotId));
 
 async function loadResult() {

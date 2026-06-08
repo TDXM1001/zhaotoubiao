@@ -27,7 +27,7 @@ defineOptions({ name: 'PortalProjectDetail' });
 const route = useRoute();
 const router = useRouter();
 const loading = ref(false);
-const projectDetail = ref<null | BidPortalApi.PortalProjectItem>(null);
+const projectDetail = ref<BidPortalApi.PortalProjectItem | null>(null);
 const projectId = computed(() => parseRouteNumber(route.query.projectId));
 
 async function loadDetail() {
@@ -137,7 +137,7 @@ onMounted(() => {
 <style scoped>
 .portal-attachment {
   margin-top: 4px;
-  color: #667085;
   font-size: 13px;
+  color: #667085;
 }
 </style>

@@ -35,6 +35,15 @@ export function parseRouteNumber(value: unknown) {
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
+/** 解析后端创建接口返回的新记录 ID，非法值不继续传递到下一步。 */
+export function parseCreatedRecordId(value: unknown) {
+  if (value === null || value === undefined || value === '') {
+    return undefined;
+  }
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
 /** 格式化招投标附件大小。 */
 export function formatBidFileSize(fileSize?: null | number) {
   if (fileSize === null || fileSize === undefined) {
