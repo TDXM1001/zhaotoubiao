@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.system.bid.evaluation.dao.BidEvaluationDao">
+
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.system.bid.evaluation.domain.vo.BidEvaluationVO">
+        SELECT e.evaluation_id,
+               e.project_id,
+               p.project_name,
+               e.lot_id,
+               l.lot_code,
+               l.lot_name,
+               e.opening_id,
+               e.status,
+               e.evaluation_mode,
+               e.start_time,
+               e.finalize_time,
+               e.final_summary,
+               e.rollback_reason,
+               e.version,
+               e.create_time,
+               e.update_time
+        FROM t_bid_evaluation e
+        INNER JOIN t_bid_project p ON p.project_id = e.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = e.lot_id
+        <where>
+            e.deleted_flag = #{queryForm.deletedFlag}
+            AND p.deleted_flag = 0
+            AND l.deleted_flag = 0
+            <if test="queryForm.keyword != null and queryForm.keyword != ''">
+                AND (
+                    p.project_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR e.final_summary LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                )
+            </if>
+            <if test="queryForm.projectId != null">
+                AND e.project_id = #{queryForm.projectId}
+            </if>
+            <if test="queryForm.lotId != null">
+                AND e.lot_id = #{queryForm.lotId}
+            </if>
+            <if test="queryForm.openingId != null">
+                AND e.opening_id = #{queryForm.openingId}
+            </if>
+            <if test="queryForm.status != null and queryForm.status != ''">
+                AND e.status = #{queryForm.status}
+            </if>
+        </where>
+        ORDER BY e.create_time DESC, e.evaluation_id DESC
+    </select>
+
+    <select id="getDetail" resultType="net.lab1024.sa.admin.module.system.bid.evaluation.domain.vo.BidEvaluationVO">
+        SELECT e.evaluation_id,
+               e.project_id,
+               p.project_name,
+               e.lot_id,
+               l.lot_code,
+               l.lot_name,
+               e.opening_id,
+               e.status,
+               e.evaluation_mode,
+               e.start_time,
+               e.finalize_time,
+               e.final_summary,
+               e.rollback_reason,
+               e.version,
+               e.create_time,
+               e.update_time
+        FROM t_bid_evaluation e
+        INNER JOIN t_bid_project p ON p.project_id = e.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = e.lot_id
+        WHERE e.evaluation_id = #{evaluationId}
+          AND e.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="getByLotId" resultType="net.lab1024.sa.admin.module.system.bid.evaluation.domain.vo.BidEvaluationVO">
+        SELECT e.evaluation_id,
+               e.project_id,
+               p.project_name,
+               e.lot_id,
+               l.lot_code,
+               l.lot_name,
+               e.opening_id,
+               e.status,
+               e.evaluation_mode,
+               e.start_time,
+               e.finalize_time,
+               e.final_summary,
+               e.rollback_reason,
+               e.version,
+               e.create_time,
+               e.update_time
+        FROM t_bid_evaluation e
+        INNER JOIN t_bid_project p ON p.project_id = e.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = e.lot_id
+        WHERE e.lot_id = #{lotId}
+          AND e.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        ORDER BY e.evaluation_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="listItems" resultType="net.lab1024.sa.admin.module.system.bid.evaluation.domain.vo.BidEvaluationItemVO">
+        SELECT evaluation_item_id,
+               evaluation_id,
+               opening_item_id,
+               submission_id,
+               supplier_name_snapshot,
+               quoted_price,
+               total_score,
+               ranking_no,
+               recommend_flag,
+               evaluation_comment,
+               create_time
+        FROM t_bid_evaluation_item
+        WHERE evaluation_id = #{evaluationId}
+          AND deleted_flag = 0
+        ORDER BY ranking_no ASC, evaluation_item_id ASC
+    </select>
+
+    <select id="countItems" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM t_bid_evaluation_item
+        WHERE evaluation_id = #{evaluationId}
+          AND deleted_flag = 0
+    </select>
+
+    <update id="updateWithVersion">
+        UPDATE t_bid_evaluation
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="evaluationMode != null">evaluation_mode = #{evaluationMode},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="finalizeTime != null">finalize_time = #{finalizeTime},</if>
+            <if test="finalSummary != null">final_summary = #{finalSummary},</if>
+            <if test="rollbackReason != null">rollback_reason = #{rollbackReason},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            version = version + 1
+        </set>
+        WHERE evaluation_id = #{evaluationId}
+          AND version = #{version}
+          AND deleted_flag = 0
+    </update>
+
+    <insert id="insertItemsFromOpening">
+        INSERT INTO t_bid_evaluation_item (
+            evaluation_id,
+            opening_item_id,
+            submission_id,
+            supplier_name_snapshot,
+            quoted_price,
+            total_score,
+            ranking_no,
+            recommend_flag,
+            deleted_flag
+        )
+        SELECT #{evaluationId},
+               oi.opening_item_id,
+               oi.submission_id,
+               oi.supplier_name_snapshot,
+               oi.quoted_price,
+               NULL,
+               NULL,
+               0,
+               0
+        FROM t_bid_opening_item oi
+        WHERE oi.opening_id = #{openingId}
+          AND oi.deleted_flag = 0
+          AND NOT EXISTS (
+              SELECT 1
+              FROM t_bid_evaluation_item ei
+              WHERE ei.evaluation_id = #{evaluationId}
+                AND ei.opening_item_id = oi.opening_item_id
+                AND ei.deleted_flag = 0
+          )
+        ORDER BY oi.sort_no ASC, oi.opening_item_id ASC
+    </insert>
+</mapper>

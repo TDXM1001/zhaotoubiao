@@ -63,6 +63,12 @@ public class AdminSwaggerTagConst extends SwaggerTagConst {
 
         public static final String SYSTEM_BID_SUBMISSION = "系统-招投标-投标管理";
 
+        public static final String SYSTEM_BID_OPENING = "系统-招投标-开标管理";
+
+        public static final String SYSTEM_BID_EVALUATION = "系统-招投标-评标管理";
+
+        public static final String SYSTEM_BID_AWARD = "系统-招投标-定标管理";
+
     }
 
 

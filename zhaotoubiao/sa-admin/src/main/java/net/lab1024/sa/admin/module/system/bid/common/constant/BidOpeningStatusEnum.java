@@ -3,26 +3,23 @@ package net.lab1024.sa.admin.module.system.bid.common.constant;
 import java.util.Arrays;
 
 /**
- * 标段状态枚举
+ * 开标状态枚举
  *
  * @author Codex
- * @date 2026-06-07
+ * @date 2026-06-08
  */
-public enum BidLotStatusEnum {
+public enum BidOpeningStatusEnum {
 
-    DRAFT("DRAFT", "草稿"),
-    BIDDING("BIDDING", "投标中"),
-    BID_CLOSED("BID_CLOSED", "已截标"),
-    OPENED("OPENED", "已开标"),
-    EVALUATING("EVALUATING", "评标中"),
-    AWARDED("AWARDED", "已定标"),
-    VOIDED("VOIDED", "已废止");
+    PENDING("PENDING", "待开标"),
+    IN_PROGRESS("IN_PROGRESS", "开标中"),
+    COMPLETED("COMPLETED", "已完成"),
+    ABNORMAL_CLOSED("ABNORMAL_CLOSED", "异常关闭");
 
     private final String code;
 
     private final String description;
 
-    BidLotStatusEnum(String code, String description) {
+    BidOpeningStatusEnum(String code, String description) {
         this.code = code;
         this.description = description;
     }

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.system.bid.award.dao.BidAwardDao">
+
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.system.bid.award.domain.vo.BidAwardVO">
+        SELECT a.award_id,
+               a.project_id,
+               p.project_name,
+               a.lot_id,
+               l.lot_code,
+               l.lot_name,
+               a.evaluation_id,
+               a.status,
+               a.winning_submission_id,
+               a.winner_enterprise_id,
+               a.winner_name_snapshot,
+               a.winner_credit_code,
+               a.award_amount,
+               a.confirm_user_id,
+               a.confirm_time,
+               a.public_notice_time,
+               a.rollback_reason,
+               a.remark,
+               a.version,
+               a.create_time,
+               a.update_time
+        FROM t_bid_award a
+        INNER JOIN t_bid_project p ON p.project_id = a.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = a.lot_id
+        <where>
+            a.deleted_flag = #{queryForm.deletedFlag}
+            AND p.deleted_flag = 0
+            AND l.deleted_flag = 0
+            <if test="queryForm.keyword != null and queryForm.keyword != ''">
+                AND (
+                    p.project_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR a.winner_name_snapshot LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR a.winner_credit_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                )
+            </if>
+            <if test="queryForm.projectId != null">
+                AND a.project_id = #{queryForm.projectId}
+            </if>
+            <if test="queryForm.lotId != null">
+                AND a.lot_id = #{queryForm.lotId}
+            </if>
+            <if test="queryForm.evaluationId != null">
+                AND a.evaluation_id = #{queryForm.evaluationId}
+            </if>
+            <if test="queryForm.status != null and queryForm.status != ''">
+                AND a.status = #{queryForm.status}
+            </if>
+        </where>
+        ORDER BY a.create_time DESC, a.award_id DESC
+    </select>
+
+    <select id="getDetail" resultType="net.lab1024.sa.admin.module.system.bid.award.domain.vo.BidAwardVO">
+        SELECT a.award_id,
+               a.project_id,
+               p.project_name,
+               a.lot_id,
+               l.lot_code,
+               l.lot_name,
+               a.evaluation_id,
+               a.status,
+               a.winning_submission_id,
+               a.winner_enterprise_id,
+               a.winner_name_snapshot,
+               a.winner_credit_code,
+               a.award_amount,
+               a.confirm_user_id,
+               a.confirm_time,
+               a.public_notice_time,
+               a.rollback_reason,
+               a.remark,
+               a.version,
+               a.create_time,
+               a.update_time
+        FROM t_bid_award a
+        INNER JOIN t_bid_project p ON p.project_id = a.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = a.lot_id
+        WHERE a.award_id = #{awardId}
+          AND a.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="getByLotId" resultType="net.lab1024.sa.admin.module.system.bid.award.domain.vo.BidAwardVO">
+        SELECT a.award_id,
+               a.project_id,
+               p.project_name,
+               a.lot_id,
+               l.lot_code,
+               l.lot_name,
+               a.evaluation_id,
+               a.status,
+               a.winning_submission_id,
+               a.winner_enterprise_id,
+               a.winner_name_snapshot,
+               a.winner_credit_code,
+               a.award_amount,
+               a.confirm_user_id,
+               a.confirm_time,
+               a.public_notice_time,
+               a.rollback_reason,
+               a.remark,
+               a.version,
+               a.create_time,
+               a.update_time
+        FROM t_bid_award a
+        INNER JOIN t_bid_project p ON p.project_id = a.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = a.lot_id
+        WHERE a.lot_id = #{lotId}
+          AND a.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        ORDER BY a.award_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="getSubmissionLatestPrice" resultType="java.math.BigDecimal">
+        SELECT sv.price_amount
+        FROM t_bid_submission s
+        INNER JOIN t_bid_submission_version sv
+          ON sv.submission_id = s.submission_id
+         AND sv.version_no = s.latest_version_no
+         AND sv.deleted_flag = 0
+        WHERE s.submission_id = #{submissionId}
+          AND s.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <update id="updateWithVersion">
+        UPDATE t_bid_award
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="winningSubmissionId != null">winning_submission_id = #{winningSubmissionId},</if>
+            <if test="winnerEnterpriseId != null">winner_enterprise_id = #{winnerEnterpriseId},</if>
+            <if test="winnerNameSnapshot != null">winner_name_snapshot = #{winnerNameSnapshot},</if>
+            <if test="winnerCreditCode != null">winner_credit_code = #{winnerCreditCode},</if>
+            <if test="awardAmount != null">award_amount = #{awardAmount},</if>
+            <if test="confirmUserId != null">confirm_user_id = #{confirmUserId},</if>
+            <if test="confirmTime != null">confirm_time = #{confirmTime},</if>
+            <if test="publicNoticeTime != null">public_notice_time = #{publicNoticeTime},</if>
+            <if test="rollbackReason != null">rollback_reason = #{rollbackReason},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            version = version + 1
+        </set>
+        WHERE award_id = #{awardId}
+          AND version = #{version}
+          AND deleted_flag = 0
+    </update>
+</mapper>

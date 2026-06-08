@@ -94,6 +94,51 @@ public class BidWorkflowHistoryService {
         this.record(BidBusinessTypeEnum.SUBMISSION, submissionId, projectId, lotId, fromStatus, toStatus, actionCode, operateComment, requestUser, snapshot);
     }
 
+    /**
+     * 记录开标动作
+     */
+    public void recordOpeningAction(Long openingId,
+                                    Long projectId,
+                                    Long lotId,
+                                    String fromStatus,
+                                    String toStatus,
+                                    String actionCode,
+                                    String operateComment,
+                                    RequestUser requestUser,
+                                    Object snapshot) {
+        this.record(BidBusinessTypeEnum.OPENING, openingId, projectId, lotId, fromStatus, toStatus, actionCode, operateComment, requestUser, snapshot);
+    }
+
+    /**
+     * 记录评标动作
+     */
+    public void recordEvaluationAction(Long evaluationId,
+                                       Long projectId,
+                                       Long lotId,
+                                       String fromStatus,
+                                       String toStatus,
+                                       String actionCode,
+                                       String operateComment,
+                                       RequestUser requestUser,
+                                       Object snapshot) {
+        this.record(BidBusinessTypeEnum.EVALUATION, evaluationId, projectId, lotId, fromStatus, toStatus, actionCode, operateComment, requestUser, snapshot);
+    }
+
+    /**
+     * 记录定标动作
+     */
+    public void recordAwardAction(Long awardId,
+                                  Long projectId,
+                                  Long lotId,
+                                  String fromStatus,
+                                  String toStatus,
+                                  String actionCode,
+                                  String operateComment,
+                                  RequestUser requestUser,
+                                  Object snapshot) {
+        this.record(BidBusinessTypeEnum.AWARD, awardId, projectId, lotId, fromStatus, toStatus, actionCode, operateComment, requestUser, snapshot);
+    }
+
     private void record(BidBusinessTypeEnum businessType,
                         Long businessId,
                         Long projectId,

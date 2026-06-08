@@ -1,8 +1,14 @@
 package net.lab1024.sa.admin.module.system.bid;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import net.lab1024.sa.admin.module.system.bid.award.controller.BidAwardController;
+import net.lab1024.sa.admin.module.system.bid.award.domain.form.BidAwardActionForm;
+import net.lab1024.sa.admin.module.system.bid.evaluation.controller.BidEvaluationController;
+import net.lab1024.sa.admin.module.system.bid.evaluation.domain.form.BidEvaluationActionForm;
 import net.lab1024.sa.admin.module.system.bid.lot.controller.BidLotController;
 import net.lab1024.sa.admin.module.system.bid.lot.domain.form.BidLotActionForm;
+import net.lab1024.sa.admin.module.system.bid.opening.controller.BidOpeningController;
+import net.lab1024.sa.admin.module.system.bid.opening.domain.form.BidOpeningActionForm;
 import net.lab1024.sa.admin.module.system.bid.project.controller.BidProjectController;
 import net.lab1024.sa.admin.module.system.bid.project.domain.form.BidProjectActionForm;
 import net.lab1024.sa.admin.module.system.bid.registration.controller.BidRegistrationController;
@@ -113,6 +119,39 @@ class BidCanonicalEndpointTest {
     }
 
     @Test
+    void 开标接口应只提供资源化路径() {
+        assertPost(BidOpeningController.class, "/bid/openings/search", "bid:opening:query");
+        assertGet(BidOpeningController.class, "/bid/openings/{openingId}", "bid:opening:query");
+        assertGet(BidOpeningController.class, "/bid/lots/{lotId}/opening", "bid:opening:query");
+        assertPost(BidOpeningController.class, "/bid/openings", "bid:opening:create");
+        assertPost(BidOpeningController.class, "/bid/openings/{openingId}/actions/start-opening", "bid:opening:start-opening");
+        assertPost(BidOpeningController.class, "/bid/openings/{openingId}/actions/complete-opening", "bid:opening:complete-opening");
+        assertPost(BidOpeningController.class, "/bid/openings/{openingId}/actions/abnormal-close-opening", "bid:opening:abnormal-close-opening");
+    }
+
+    @Test
+    void 评标接口应只提供资源化路径() {
+        assertPost(BidEvaluationController.class, "/bid/evaluations/search", "bid:evaluation:query");
+        assertGet(BidEvaluationController.class, "/bid/evaluations/{evaluationId}", "bid:evaluation:query");
+        assertGet(BidEvaluationController.class, "/bid/lots/{lotId}/evaluation", "bid:evaluation:query");
+        assertPost(BidEvaluationController.class, "/bid/evaluations", "bid:evaluation:create");
+        assertPost(BidEvaluationController.class, "/bid/evaluations/{evaluationId}/actions/start-evaluation", "bid:evaluation:start-evaluation");
+        assertPost(BidEvaluationController.class, "/bid/evaluations/{evaluationId}/actions/finalize-evaluation", "bid:evaluation:finalize-evaluation");
+        assertPost(BidEvaluationController.class, "/bid/evaluations/{evaluationId}/actions/rollback-evaluation", "bid:evaluation:rollback-evaluation");
+    }
+
+    @Test
+    void 定标接口应只提供资源化路径() {
+        assertPost(BidAwardController.class, "/bid/awards/search", "bid:award:query");
+        assertGet(BidAwardController.class, "/bid/awards/{awardId}", "bid:award:query");
+        assertGet(BidAwardController.class, "/bid/lots/{lotId}/award", "bid:award:query");
+        assertPost(BidAwardController.class, "/bid/awards", "bid:award:create");
+        assertPost(BidAwardController.class, "/bid/awards/{awardId}/actions/confirm-award", "bid:award:confirm-award");
+        assertPost(BidAwardController.class, "/bid/awards/{awardId}/actions/rollback-award", "bid:award:rollback-award");
+        assertPost(BidAwardController.class, "/bid/awards/{awardId}/actions/cancel-award", "bid:award:cancel-award");
+    }
+
+    @Test
     void 资源化动作接口应拒绝路径ID与表单ID不一致() {
         BidProjectActionForm projectActionForm = new BidProjectActionForm();
         projectActionForm.setProjectId(2L);
@@ -143,6 +182,24 @@ class BidCanonicalEndpointTest {
         submissionActionForm.setVersion(1);
         ResponseDTO<String> submissionResult = new BidSubmissionController().withdrawResource(1L, submissionActionForm);
         assertFalse(submissionResult.getOk(), "投标路径ID与表单ID不一致时应返回参数错误");
+
+        BidOpeningActionForm openingActionForm = new BidOpeningActionForm();
+        openingActionForm.setOpeningId(2L);
+        openingActionForm.setVersion(1);
+        ResponseDTO<String> openingResult = new BidOpeningController().startResource(1L, openingActionForm);
+        assertFalse(openingResult.getOk(), "开标路径ID与表单ID不一致时应返回参数错误");
+
+        BidEvaluationActionForm evaluationActionForm = new BidEvaluationActionForm();
+        evaluationActionForm.setEvaluationId(2L);
+        evaluationActionForm.setVersion(1);
+        ResponseDTO<String> evaluationResult = new BidEvaluationController().startResource(1L, evaluationActionForm);
+        assertFalse(evaluationResult.getOk(), "评标路径ID与表单ID不一致时应返回参数错误");
+
+        BidAwardActionForm awardActionForm = new BidAwardActionForm();
+        awardActionForm.setAwardId(2L);
+        awardActionForm.setVersion(1);
+        ResponseDTO<String> awardResult = new BidAwardController().confirmResource(1L, awardActionForm);
+        assertFalse(awardResult.getOk(), "定标路径ID与表单ID不一致时应返回参数错误");
     }
 
     private void assertGet(Class<?> controllerClass, String path, String permission) {

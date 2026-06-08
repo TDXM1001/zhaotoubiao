@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.system.bid.opening.dao.BidOpeningDao">
+
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.system.bid.opening.domain.vo.BidOpeningVO">
+        SELECT o.opening_id,
+               o.project_id,
+               p.project_name,
+               o.lot_id,
+               l.lot_code,
+               l.lot_name,
+               o.status,
+               o.opening_time,
+               o.opening_place,
+               o.host_employee_id,
+               o.recorder_employee_id,
+               o.summary,
+               o.abnormal_flag,
+               o.abnormal_reason,
+               o.version,
+               o.create_time,
+               o.update_time
+        FROM t_bid_opening o
+        INNER JOIN t_bid_project p ON p.project_id = o.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = o.lot_id
+        <where>
+            o.deleted_flag = #{queryForm.deletedFlag}
+            AND p.deleted_flag = 0
+            AND l.deleted_flag = 0
+            <if test="queryForm.keyword != null and queryForm.keyword != ''">
+                AND (
+                    p.project_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_name LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR l.lot_code LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                    OR o.opening_place LIKE CONCAT('%', #{queryForm.keyword}, '%')
+                )
+            </if>
+            <if test="queryForm.projectId != null">
+                AND o.project_id = #{queryForm.projectId}
+            </if>
+            <if test="queryForm.lotId != null">
+                AND o.lot_id = #{queryForm.lotId}
+            </if>
+            <if test="queryForm.status != null and queryForm.status != ''">
+                AND o.status = #{queryForm.status}
+            </if>
+        </where>
+        ORDER BY o.opening_time DESC, o.opening_id DESC
+    </select>
+
+    <select id="getDetail" resultType="net.lab1024.sa.admin.module.system.bid.opening.domain.vo.BidOpeningVO">
+        SELECT o.opening_id,
+               o.project_id,
+               p.project_name,
+               o.lot_id,
+               l.lot_code,
+               l.lot_name,
+               o.status,
+               o.opening_time,
+               o.opening_place,
+               o.host_employee_id,
+               o.recorder_employee_id,
+               o.summary,
+               o.abnormal_flag,
+               o.abnormal_reason,
+               o.version,
+               o.create_time,
+               o.update_time
+        FROM t_bid_opening o
+        INNER JOIN t_bid_project p ON p.project_id = o.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = o.lot_id
+        WHERE o.opening_id = #{openingId}
+          AND o.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        LIMIT 1
+    </select>
+
+    <select id="getByLotId" resultType="net.lab1024.sa.admin.module.system.bid.opening.domain.vo.BidOpeningVO">
+        SELECT o.opening_id,
+               o.project_id,
+               p.project_name,
+               o.lot_id,
+               l.lot_code,
+               l.lot_name,
+               o.status,
+               o.opening_time,
+               o.opening_place,
+               o.host_employee_id,
+               o.recorder_employee_id,
+               o.summary,
+               o.abnormal_flag,
+               o.abnormal_reason,
+               o.version,
+               o.create_time,
+               o.update_time
+        FROM t_bid_opening o
+        INNER JOIN t_bid_project p ON p.project_id = o.project_id
+        INNER JOIN t_bid_lot l ON l.lot_id = o.lot_id
+        WHERE o.lot_id = #{lotId}
+          AND o.deleted_flag = 0
+          AND p.deleted_flag = 0
+          AND l.deleted_flag = 0
+        ORDER BY o.opening_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="listItems" resultType="net.lab1024.sa.admin.module.system.bid.opening.domain.vo.BidOpeningItemVO">
+        SELECT opening_item_id,
+               opening_id,
+               submission_id,
+               submission_version_id,
+               supplier_enterprise_id,
+               supplier_name_snapshot,
+               supplier_credit_code,
+               quoted_price,
+               document_check_result,
+               open_comment,
+               sort_no,
+               create_time
+        FROM t_bid_opening_item
+        WHERE opening_id = #{openingId}
+          AND deleted_flag = 0
+        ORDER BY sort_no ASC, opening_item_id ASC
+    </select>
+
+    <select id="countItems" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM t_bid_opening_item
+        WHERE opening_id = #{openingId}
+          AND deleted_flag = 0
+    </select>
+
+    <update id="updateWithVersion">
+        UPDATE t_bid_opening
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="openingTime != null">opening_time = #{openingTime},</if>
+            <if test="openingPlace != null">opening_place = #{openingPlace},</if>
+            <if test="hostEmployeeId != null">host_employee_id = #{hostEmployeeId},</if>
+            <if test="recorderEmployeeId != null">recorder_employee_id = #{recorderEmployeeId},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="abnormalFlag != null">abnormal_flag = #{abnormalFlag},</if>
+            <if test="abnormalReason != null">abnormal_reason = #{abnormalReason},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            version = version + 1
+        </set>
+        WHERE opening_id = #{openingId}
+          AND version = #{version}
+          AND deleted_flag = 0
+    </update>
+
+    <insert id="insertItemsFromSubmissions">
+        INSERT INTO t_bid_opening_item (
+            opening_id,
+            submission_id,
+            submission_version_id,
+            supplier_enterprise_id,
+            supplier_name_snapshot,
+            supplier_credit_code,
+            quoted_price,
+            document_check_result,
+            sort_no,
+            deleted_flag
+        )
+        SELECT #{openingId},
+               s.submission_id,
+               sv.submission_version_id,
+               s.supplier_enterprise_id,
+               s.supplier_name_snapshot,
+               s.supplier_credit_code,
+               sv.price_amount,
+               'PASSED',
+               0,
+               0
+        FROM t_bid_submission s
+        INNER JOIN t_bid_submission_version sv
+          ON sv.submission_id = s.submission_id
+         AND sv.version_no = s.latest_version_no
+         AND sv.is_effective = 1
+         AND sv.deleted_flag = 0
+        WHERE s.lot_id = #{lotId}
+          AND s.status = 'SUBMITTED'
+          AND s.deleted_flag = 0
+          AND NOT EXISTS (
+              SELECT 1
+              FROM t_bid_opening_item oi
+              WHERE oi.opening_id = #{openingId}
+                AND oi.submission_id = s.submission_id
+                AND oi.deleted_flag = 0
+          )
+        ORDER BY s.submission_id ASC
+    </insert>
+
+    <update id="markSubmissionsOpenedByOpening">
+        UPDATE t_bid_submission s
+        INNER JOIN t_bid_opening_item oi
+          ON oi.submission_id = s.submission_id
+         AND oi.opening_id = #{openingId}
+         AND oi.deleted_flag = 0
+        SET s.status = 'OPENED',
+            s.update_user_id = #{updateUserId},
+            s.update_time = NOW(),
+            s.version = s.version + 1
+        WHERE s.status = 'SUBMITTED'
+          AND s.deleted_flag = 0
+    </update>
+</mapper>
