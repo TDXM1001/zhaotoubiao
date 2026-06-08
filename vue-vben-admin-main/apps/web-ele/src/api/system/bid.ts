@@ -217,6 +217,275 @@ export namespace SystemBidRegistrationApi {
   }
 }
 
+export namespace SystemBidTenderApi {
+  /** 招投标附件摘要 */
+  export interface AttachmentItem {
+    attachmentId: number;
+    businessId: number;
+    businessType: string;
+    downloadUrl?: string;
+    fileCategory: string;
+    fileId: number;
+    fileName?: string;
+    fileSize?: null | number;
+    mainFlag?: boolean;
+    previewUrl?: string;
+    uploaderName?: string;
+    uploadTime?: string;
+    versionNo?: null | number;
+  }
+
+  /** 招标文件分页查询参数 */
+  export interface TenderQueryParams {
+    keyword?: string;
+    lotId?: number;
+    pageNum: number;
+    pageSize: number;
+    projectId?: number;
+    searchCount?: boolean;
+    status?: string;
+    versionType?: string;
+  }
+
+  /** 招标文件动作参数 */
+  export interface TenderActionParams {
+    remark?: string;
+    tenderVersionId: number;
+    version: number;
+  }
+
+  /** 招标文件列表项 */
+  export interface TenderItem {
+    allowedActions?: string[];
+    attachments?: AttachmentItem[];
+    createTime?: string;
+    currentFlag?: boolean;
+    effectiveTime?: string;
+    lotCode?: string;
+    lotId: number;
+    lotName?: string;
+    parentVersionId?: null | number;
+    projectId: number;
+    projectName?: string;
+    publishTime?: string;
+    remark?: string;
+    status: string;
+    summary?: string;
+    tenderVersionId: number;
+    updateTime?: string;
+    version: number;
+    versionNo: number;
+    versionType: string;
+  }
+
+  /** 招标文件新增参数 */
+  export interface TenderCreateParams {
+    lotId: number;
+    projectId: number;
+    remark?: string;
+    summary?: string;
+    versionType: string;
+  }
+
+  /** 招标文件编辑参数 */
+  export interface TenderUpdateParams extends TenderCreateParams {
+    tenderVersionId: number;
+    version: number;
+  }
+}
+
+export namespace SystemBidSubmissionApi {
+  export type AttachmentItem = SystemBidTenderApi.AttachmentItem;
+
+  /** 投标分页查询参数 */
+  export interface SubmissionQueryParams {
+    keyword?: string;
+    lotId?: number;
+    pageNum: number;
+    pageSize: number;
+    projectId?: number;
+    registrationId?: number;
+    searchCount?: boolean;
+    status?: string;
+    supplierEnterpriseId?: number;
+  }
+
+  /** 投标动作参数 */
+  export interface SubmissionActionParams {
+    remark?: string;
+    submissionId: number;
+    version: number;
+  }
+
+  /** 投标提交参数 */
+  export interface SubmissionSubmitParams extends SubmissionActionParams {
+    contactName?: string;
+    contactPhone?: string;
+    fileManifestJson?: string;
+    priceAmount?: null | number;
+  }
+
+  /** 投标创建参数 */
+  export interface SubmissionCreateParams {
+    lotId: number;
+    projectId: number;
+    registrationId: number;
+    remark?: string;
+  }
+
+  /** 投标列表项 */
+  export interface SubmissionItem {
+    allowedActions?: string[];
+    attachments?: AttachmentItem[];
+    contactName?: string;
+    contactPhone?: string;
+    createTime?: string;
+    fileManifestJson?: string;
+    latestSubmitTime?: string;
+    latestSubmissionVersionId?: null | number;
+    latestVersionNo: number;
+    lotCode?: string;
+    lotId: number;
+    lotName?: string;
+    priceAmount?: null | number;
+    projectId: number;
+    projectName?: string;
+    receiptNo?: string;
+    registrationId: number;
+    remark?: string;
+    status: string;
+    submissionId: number;
+    supplierCreditCode: string;
+    supplierEnterpriseId?: null | number;
+    supplierNameSnapshot: string;
+    updateTime?: string;
+    version: number;
+    withdrawReason?: string;
+    withdrawTime?: string;
+  }
+}
+
+export namespace SystemBidPortalApi {
+  export type AttachmentItem = SystemBidTenderApi.AttachmentItem;
+
+  /** 门户项目分页查询参数 */
+  export interface PortalProjectQueryParams {
+    keyword?: string;
+    pageNum: number;
+    pageSize: number;
+    searchCount?: boolean;
+  }
+
+  /** 门户标段 */
+  export interface PortalLotItem {
+    bidEndTime?: string;
+    bidStartTime?: string;
+    lotCode?: string;
+    lotId: number;
+    lotName?: string;
+    lotScope?: string;
+    registrationEndTime?: string;
+    registrationStartTime?: string;
+    tenderAttachments?: AttachmentItem[];
+    tenderSummary?: string;
+    tenderVersionId?: null | number;
+    tenderVersionNo?: null | number;
+  }
+
+  /** 门户项目 */
+  export interface PortalProjectItem {
+    budgetAmount?: null | number;
+    lotCount?: number;
+    lots?: PortalLotItem[];
+    procurementMode?: string;
+    projectCode?: string;
+    projectId: number;
+    projectName: string;
+    projectType?: string;
+    publishTime?: string;
+  }
+
+  /** 门户报名创建参数 */
+  export interface PortalRegistrationCreateParams {
+    contactEmail?: string;
+    contactName?: string;
+    contactPhone?: string;
+    lotId: number;
+    projectId: number;
+    registrationType: string;
+    remark?: string;
+    supplierCreditCode: string;
+    supplierEnterpriseId?: null | number;
+    supplierNameSnapshot: string;
+  }
+
+  /** 门户报名 */
+  export interface PortalRegistrationItem {
+    cancelReason?: string;
+    lotId: number;
+    lotName?: string;
+    projectId: number;
+    projectName?: string;
+    qualifiedTime?: string;
+    registrationId: number;
+    rejectReason?: string;
+    status: string;
+    submitTime?: string;
+    supplierCreditCode: string;
+    supplierNameSnapshot: string;
+    version: number;
+  }
+
+  /** 门户投标创建参数 */
+  export interface PortalSubmissionCreateParams {
+    lotId: number;
+    projectId: number;
+    registrationId: number;
+    remark?: string;
+    supplierCreditCode: string;
+  }
+
+  /** 门户投标动作参数 */
+  export interface PortalSubmissionActionParams {
+    remark?: string;
+    submissionId: number;
+    supplierCreditCode: string;
+    version: number;
+  }
+
+  /** 门户投标提交参数 */
+  export interface PortalSubmissionSubmitParams
+    extends PortalSubmissionActionParams {
+    contactName?: string;
+    contactPhone?: string;
+    fileManifestJson?: string;
+    priceAmount?: null | number;
+  }
+
+  /** 门户投标 */
+  export interface PortalSubmissionItem {
+    attachments?: AttachmentItem[];
+    contactName?: string;
+    contactPhone?: string;
+    latestSubmitTime?: string;
+    latestSubmissionVersionId?: null | number;
+    latestVersionNo: number;
+    lotId: number;
+    lotName?: string;
+    priceAmount?: null | number;
+    projectId: number;
+    projectName?: string;
+    receiptNo?: string;
+    registrationId: number;
+    status: string;
+    submissionId: number;
+    supplierCreditCode: string;
+    supplierNameSnapshot: string;
+    version: number;
+    withdrawReason?: string;
+  }
+}
+
 /** 查询项目分页 */
 export async function queryBidProjectPageApi(
   data: SystemBidProjectApi.ProjectQueryParams,
@@ -361,4 +630,198 @@ export async function cancelBidRegistrationApi(
   data: SystemBidRegistrationApi.RegistrationActionParams,
 ) {
   return requestClient.post<string>('/bid/registration/cancel', data);
+}
+
+/** 查询招标文件分页 */
+export async function queryBidTenderPageApi(
+  data: SystemBidTenderApi.TenderQueryParams,
+) {
+  return requestClient.post<
+    SystemBidProjectApi.PageResult<SystemBidTenderApi.TenderItem>
+  >('/bid/tenders/search', data);
+}
+
+/** 查询招标文件详情 */
+export async function getBidTenderDetailApi(tenderVersionId: number | string) {
+  return requestClient.get<SystemBidTenderApi.TenderItem>(
+    `/bid/tenders/${tenderVersionId}`,
+  );
+}
+
+/** 查询标段当前有效招标文件 */
+export async function getActiveBidTenderByLotIdApi(lotId: number | string) {
+  return requestClient.get<SystemBidTenderApi.TenderItem>(
+    `/bid/lots/${lotId}/tenders/active`,
+  );
+}
+
+/** 新增招标文件 */
+export async function addBidTenderApi(
+  data: SystemBidTenderApi.TenderCreateParams,
+) {
+  return requestClient.post<string>('/bid/tenders', data);
+}
+
+/** 编辑招标文件 */
+export async function updateBidTenderApi(
+  data: SystemBidTenderApi.TenderUpdateParams,
+) {
+  return requestClient.put<string>(
+    `/bid/tenders/${data.tenderVersionId}`,
+    data,
+  );
+}
+
+/** 发布招标文件 */
+export async function publishBidTenderApi(
+  data: SystemBidTenderApi.TenderActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/tenders/${data.tenderVersionId}/actions/publish-tender`,
+    data,
+  );
+}
+
+/** 发布招标文件澄清 */
+export async function clarifyBidTenderApi(
+  data: SystemBidTenderApi.TenderActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/tenders/${data.tenderVersionId}/actions/clarify-tender`,
+    data,
+  );
+}
+
+/** 撤回招标文件 */
+export async function withdrawBidTenderApi(
+  data: SystemBidTenderApi.TenderActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/tenders/${data.tenderVersionId}/actions/withdraw-tender`,
+    data,
+  );
+}
+
+/** 查询投标分页 */
+export async function queryBidSubmissionPageApi(
+  data: SystemBidSubmissionApi.SubmissionQueryParams,
+) {
+  return requestClient.post<
+    SystemBidProjectApi.PageResult<SystemBidSubmissionApi.SubmissionItem>
+  >('/bid/submissions/search', data);
+}
+
+/** 查询投标详情 */
+export async function getBidSubmissionDetailApi(submissionId: number | string) {
+  return requestClient.get<SystemBidSubmissionApi.SubmissionItem>(
+    `/bid/submissions/${submissionId}`,
+  );
+}
+
+/** 按报名查询投标 */
+export async function getBidSubmissionByRegistrationIdApi(
+  registrationId: number | string,
+) {
+  return requestClient.get<SystemBidSubmissionApi.SubmissionItem>(
+    `/bid/registrations/${registrationId}/submission`,
+  );
+}
+
+/** 新增投标主记录 */
+export async function addBidSubmissionApi(
+  data: SystemBidSubmissionApi.SubmissionCreateParams,
+) {
+  return requestClient.post<string>('/bid/submissions', data);
+}
+
+/** 提交投标 */
+export async function submitBidSubmissionApi(
+  data: SystemBidSubmissionApi.SubmissionSubmitParams,
+) {
+  return requestClient.post<string>(
+    `/bid/submissions/${data.submissionId}/actions/submit-bid`,
+    data,
+  );
+}
+
+/** 撤回投标 */
+export async function withdrawBidSubmissionApi(
+  data: SystemBidSubmissionApi.SubmissionActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/submissions/${data.submissionId}/actions/withdraw-bid`,
+    data,
+  );
+}
+
+/** 门户查询项目分页 */
+export async function queryBidPortalProjectPageApi(
+  data: SystemBidPortalApi.PortalProjectQueryParams,
+) {
+  return requestClient.post<
+    SystemBidProjectApi.PageResult<SystemBidPortalApi.PortalProjectItem>
+  >('/bid/portal/projects/search', data);
+}
+
+/** 门户查询项目详情 */
+export async function getBidPortalProjectDetailApi(projectId: number | string) {
+  return requestClient.get<SystemBidPortalApi.PortalProjectItem>(
+    `/bid/portal/projects/${projectId}`,
+  );
+}
+
+/** 门户提交报名 */
+export async function createBidPortalRegistrationApi(
+  data: SystemBidPortalApi.PortalRegistrationCreateParams,
+) {
+  return requestClient.post<string>('/bid/portal/registrations', data);
+}
+
+/** 门户查询本人报名详情 */
+export async function getBidPortalRegistrationDetailApi(
+  registrationId: number | string,
+  supplierCreditCode: string,
+) {
+  return requestClient.get<SystemBidPortalApi.PortalRegistrationItem>(
+    `/bid/portal/registrations/${registrationId}`,
+    { params: { supplierCreditCode } },
+  );
+}
+
+/** 门户创建投标主记录 */
+export async function createBidPortalSubmissionApi(
+  data: SystemBidPortalApi.PortalSubmissionCreateParams,
+) {
+  return requestClient.post<string>('/bid/portal/submissions', data);
+}
+
+/** 门户查询本人投标详情 */
+export async function getBidPortalSubmissionDetailApi(
+  submissionId: number | string,
+  supplierCreditCode: string,
+) {
+  return requestClient.get<SystemBidPortalApi.PortalSubmissionItem>(
+    `/bid/portal/submissions/${submissionId}`,
+    { params: { supplierCreditCode } },
+  );
+}
+
+/** 门户提交投标 */
+export async function submitBidPortalSubmissionApi(
+  data: SystemBidPortalApi.PortalSubmissionSubmitParams,
+) {
+  return requestClient.post<string>(
+    `/bid/portal/submissions/${data.submissionId}/actions/submit-bid`,
+    data,
+  );
+}
+
+/** 门户撤回投标 */
+export async function withdrawBidPortalSubmissionApi(
+  data: SystemBidPortalApi.PortalSubmissionActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/portal/submissions/${data.submissionId}/actions/withdraw-bid`,
+    data,
+  );
 }

@@ -1,5 +1,4 @@
 import type { SystemDepartmentApi } from '#/api';
-
 import type { EnumProps } from '#/components/pro-table/types';
 
 /** 部门树选项 */
@@ -34,6 +33,40 @@ export const REGISTRATION_STATUS_OPTIONS: EnumProps[] = [
   { label: '已取消', tagType: 'info', value: 'CANCELLED' },
 ];
 
+/** 招标文件状态选项 */
+export const TENDER_STATUS_OPTIONS: EnumProps[] = [
+  { label: '草稿', tagType: 'info', value: 'DRAFT' },
+  { label: '当前有效', tagType: 'success', value: 'ACTIVE' },
+  { label: '已替代', tagType: 'warning', value: 'SUPERSEDED' },
+  { label: '已撤回', tagType: 'danger', value: 'WITHDRAWN' },
+];
+
+/** 投标状态选项 */
+export const SUBMISSION_STATUS_OPTIONS: EnumProps[] = [
+  { label: '资格通过', tagType: 'success', value: 'QUALIFIED' },
+  { label: '已投标', tagType: 'warning', value: 'SUBMITTED' },
+  { label: '已撤回', tagType: 'info', value: 'WITHDRAWN' },
+  { label: '已开标', tagType: 'primary', value: 'OPENED' },
+];
+
+/** 招标文件版本类型选项 */
+export const TENDER_VERSION_TYPE_OPTIONS: EnumProps[] = [
+  { label: '招标文件', value: 'TENDER_MAIN' },
+  { label: '公告', value: 'ANNOUNCEMENT' },
+  { label: '澄清文件', value: 'CLARIFICATION' },
+  { label: '更正文件', value: 'CORRECTION' },
+];
+
+/** 招投标附件分类选项 */
+export const ATTACHMENT_FILE_CATEGORY_OPTIONS: EnumProps[] = [
+  { label: '招标文件正文', value: 'TENDER_MAIN' },
+  { label: '招标公告', value: 'TENDER_ANNOUNCEMENT' },
+  { label: '澄清文件', value: 'TENDER_CLARIFICATION' },
+  { label: '投标文件正文', value: 'SUBMISSION_MAIN' },
+  { label: '报价文件', value: 'SUBMISSION_PRICE' },
+  { label: '其他附件', value: 'OTHER' },
+];
+
 const STATUS_TYPE_MAP: Record<
   string,
   'danger' | 'info' | 'primary' | 'success' | 'warning'
@@ -43,11 +76,15 @@ const STATUS_TYPE_MAP: Record<
   BIDDING: 'success',
   CANCELLED: 'danger',
   DRAFT: 'info',
+  ACTIVE: 'success',
   PLANNED: 'warning',
   PUBLISHED: 'success',
   QUALIFIED: 'success',
   REJECTED: 'danger',
   SUBMITTED: 'warning',
+  SUPERSEDED: 'warning',
+  WITHDRAWN: 'info',
+  OPENED: 'primary',
   VOIDED: 'danger',
 };
 
@@ -83,6 +120,26 @@ export function getRegistrationStatusText(status?: string) {
   return getLabelFromOptions(REGISTRATION_STATUS_OPTIONS, status);
 }
 
+/** 获取招标文件状态文本 */
+export function getTenderStatusText(status?: string) {
+  return getLabelFromOptions(TENDER_STATUS_OPTIONS, status);
+}
+
+/** 获取投标状态文本 */
+export function getSubmissionStatusText(status?: string) {
+  return getLabelFromOptions(SUBMISSION_STATUS_OPTIONS, status);
+}
+
+/** 获取招标文件版本类型文本 */
+export function getTenderVersionTypeText(versionType?: string) {
+  return getLabelFromOptions(TENDER_VERSION_TYPE_OPTIONS, versionType);
+}
+
+/** 获取附件分类文本 */
+export function getAttachmentCategoryText(fileCategory?: string) {
+  return getLabelFromOptions(ATTACHMENT_FILE_CATEGORY_OPTIONS, fileCategory);
+}
+
 /** 获取供应商报名状态标签样式 */
 export function getRegistrationStatusTagType(status?: string) {
   return REGISTRATION_STATUS_TYPE_MAP[status ?? 'SUBMITTED'] ?? 'info';
@@ -111,4 +168,18 @@ export function parseRouteNumber(value: unknown) {
   }
   const parsed = Number(value);
   return Number.isNaN(parsed) ? undefined : parsed;
+}
+
+/** 格式化招投标附件大小 */
+export function formatBidFileSize(fileSize?: null | number) {
+  if (fileSize === null || fileSize === undefined) {
+    return '--';
+  }
+  if (fileSize < 1024) {
+    return `${fileSize} B`;
+  }
+  if (fileSize < 1024 * 1024) {
+    return `${Number.parseFloat((fileSize / 1024).toFixed(1))} KB`;
+  }
+  return `${Number.parseFloat((fileSize / 1024 / 1024).toFixed(1))} MB`;
 }
