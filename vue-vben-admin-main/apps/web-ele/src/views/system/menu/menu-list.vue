@@ -16,7 +16,6 @@ import { useAccessStore } from '@vben/stores';
 import { Delete } from '@element-plus/icons-vue';
 import {
   ElButton,
-  ElCard,
   ElMessage,
   ElMessageBox,
   ElTag,
@@ -208,9 +207,9 @@ const tableColumns = reactive<ColumnProps<SystemMenuApi.MenuItem>[]>([
 ]);
 
 const searchOnlyColumnProps = new Set([
+  'cacheFlag',
   'disabledFlag',
   'frameFlag',
-  'cacheFlag',
   'visibleFlag',
 ]);
 
@@ -320,12 +319,13 @@ async function queryMenuTable(params: Record<string, any> = {}) {
   allMenuItems.value.forEach((item) => {
     let match = true;
     if (keywords) {
-      match =
+      match = Boolean(
         item.menuName?.toLowerCase().includes(keywords) ||
-        item.path?.toLowerCase().includes(keywords) ||
-        item.component?.toLowerCase().includes(keywords) ||
-        item.apiPerms?.toLowerCase().includes(keywords) ||
-        item.webPerms?.toLowerCase().includes(keywords);
+          item.path?.toLowerCase().includes(keywords) ||
+          item.component?.toLowerCase().includes(keywords) ||
+          item.apiPerms?.toLowerCase().includes(keywords) ||
+          item.webPerms?.toLowerCase().includes(keywords),
+      );
     }
     if (match && menuType !== undefined) {
       match = item.menuType === menuType;

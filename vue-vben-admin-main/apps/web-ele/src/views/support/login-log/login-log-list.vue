@@ -7,11 +7,11 @@ import { computed, reactive } from 'vue';
 import { Page } from '@vben/common-ui';
 import { useAccessStore } from '@vben/stores';
 
-import { ElAlert, ElButton, ElMessage, ElTag } from 'element-plus';
+import { ElAlert, ElMessage, ElTag } from 'element-plus';
 
 import { queryLoginLogPageApi } from '#/api';
-import { useDictOptions } from '#/composables/use-dict-data';
 import ProTable from '#/components/pro-table/index.vue';
+import { useDictOptions } from '#/composables/use-dict-data';
 
 defineOptions({
   name: 'SupportLoginLogList',
@@ -155,7 +155,6 @@ function handleSearch() {
       />
 
       <ProTable
-        ref="proTable"
         :columns="tableColumns"
         :request-api="queryLoginLogTable"
         row-key="loginLogId"
@@ -164,12 +163,12 @@ function handleSearch() {
         :tool-button="['refresh', 'setting']"
         @search="handleSearch"
       >
-          <template #loginResult="{ row }">
-            <ElTag :type="getLoginResultTagType(row.loginResult)">
-              {{ getLoginResultText(row.loginResult) }}
-            </ElTag>
-          </template>
-        </ProTable>
+        <template #loginResult="{ row }">
+          <ElTag :type="getLoginResultTagType(row.loginResult)">
+            {{ getLoginResultText(row.loginResult) }}
+          </ElTag>
+        </template>
+      </ProTable>
     </div>
   </Page>
 </template>

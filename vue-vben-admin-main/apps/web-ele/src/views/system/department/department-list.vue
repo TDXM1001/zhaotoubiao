@@ -9,7 +9,7 @@ import type {
 
 import { computed, onMounted, reactive, ref } from 'vue';
 
-import { Page, VbenIcon } from '@vben/common-ui';
+import { Page } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 import { useAccessStore } from '@vben/stores';
 
@@ -22,7 +22,6 @@ import {
 
 import {
   batchDeleteDepartmentApi,
-  deleteDepartmentApi,
   listDepartmentOptionsApi,
   queryAllEmployeeApi,
   queryDepartmentTreeApi,
