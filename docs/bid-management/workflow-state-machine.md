@@ -301,7 +301,7 @@ stateDiagram-v2
 
 - `edit-project`
 - `submit-plan`
-- `publish`
+- `publish-project`
 - `start-opening`
 - `confirm-award`
 - `archive-project`

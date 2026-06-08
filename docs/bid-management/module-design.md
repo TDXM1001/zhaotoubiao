@@ -3,11 +3,11 @@
 ## 总体设计
 
 - 后端
-  - 在 `sa-admin/module/business` 下新增 `bid` 业务域
+  - 在 `sa-admin/module/system` 下维护 `bid` 业务域
   - 保持现有 `controller/service/manager/dao/domain` 分层
 - 前端
-  - 在 `apps/web-ele/src/api/bid` 新增接口目录
-  - 在 `apps/web-ele/src/views/bid` 新增业务页面
+  - 在 `apps/web-ele/src/api/system/bid.ts` 维护招投标接口
+  - 在 `apps/web-ele/src/views/system/bid` 新增业务页面
   - 继续复用现有登录、动态菜单、权限、请求封装
 
 ## 领域模块拆分
@@ -77,7 +77,7 @@
 ## 后端包建议
 
 ```text
-sa-admin/src/main/java/net/lab1024/sa/admin/module/business/bid/
+sa-admin/src/main/java/net/lab1024/sa/admin/module/system/bid/
   project/
   tender/
   party/
@@ -141,6 +141,7 @@ constant/
 - 新域统一命名空间：`/bid/**`
 - 列表查询优先使用搜索接口
 - 状态流转使用动作接口，不与普通更新混写
+- 已落地的 `/bid/project/queryPage`、`/bid/lot/add` 等旧式接口仅保留为兼容适配层，新模块不再扩展旧式路径
 
 示例：
 
@@ -196,8 +197,9 @@ POST /bid/awards/{awardId}/actions/confirm
 
 ## 动态菜单约束
 
-- 后端菜单 `component` 字段必须精确映射到 `src/views/bid/**/*`
-- 新菜单路径命名统一使用 `bid/...`
+- 后端菜单 `path` 字段统一使用 `/system/bid/{resource}/{page}`
+- 后端菜单 `component` 字段必须精确映射到 `src/views/system/bid/**/*`
+- 后端菜单 `component` 字段不写 `src/views` 前缀，格式统一为 `/system/bid/{resource}/{resource}-{page}.vue`
 - 避免组件路径与菜单配置不一致，否则会落到占位页
 
 ## 首批实现顺序

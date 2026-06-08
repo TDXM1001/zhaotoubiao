@@ -43,6 +43,9 @@
 - `implementation-roadmap.md`
   - 分阶段实施路线图
   - 说明 P0/P1/P2/P3 目标、验收标准、主要风险
+- `p0-implementation-baseline.md`
+  - P0 实施基线
+  - 冻结当前实现路径、API 兼容策略、数据库顺序、状态动作矩阵和验收命令
 
 ## 决策记录
 
@@ -52,6 +55,8 @@
   - 一期采用“三方协同 + 供应商门户轻量版”
 - `../decisions/ADR-003-workflow-and-api-contract.md`
   - 流程采用业务状态机，接口采用统一资源化契约
+- `../decisions/ADR-004-bid-p0-implementation-baseline.md`
+  - 冻结招投标 P0 实施路径、兼容接口、数据库和菜单基线
 
 ## 一期范围摘要
 
@@ -81,4 +86,5 @@
 6. 再看 `permission-and-org-model.md`
 7. 再看 `api-contract.md`
 8. 然后看 `module-design.md`
-9. 最后看 `implementation-roadmap.md` 和 `../decisions/`
+9. 再看 `implementation-roadmap.md`
+10. 最后看 `p0-implementation-baseline.md` 和 `../decisions/`

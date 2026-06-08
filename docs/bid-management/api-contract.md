@@ -13,7 +13,7 @@
 - 分页查询继续使用 `PageParam` + `PageResult<T>`
 - 前端请求层继续按 `code=0`、`data` 解包
 - 一期不强依赖 `PATCH`
-- 一期不引入第二套 API 风格或第二个版本前缀
+- 一期不引入第二个版本前缀；已落地旧式接口仅作为兼容适配层，新模块以资源化契约为目标接口
 
 ## 统一响应契约
 
@@ -171,7 +171,7 @@ POST /resource/{id}/actions/{actionName}
 
 ```text
 POST /bid/projects/{projectId}/actions/submit-plan
-POST /bid/projects/{projectId}/actions/publish
+POST /bid/projects/{projectId}/actions/publish-project
 POST /bid/lots/{lotId}/actions/close-bid
 POST /bid/submissions/{submissionId}/actions/approve-qualification
 POST /bid/submissions/{submissionId}/actions/submit
@@ -261,8 +261,8 @@ POST /bid/archive/export-package
   "version": 7,
   "allowedActions": [
     "submit-plan",
-    "publish",
-    "archive"
+    "publish-project",
+    "archive-project"
   ]
 }
 ```
@@ -386,9 +386,9 @@ GET  /bid/projects/{projectId}
 POST /bid/projects
 PUT  /bid/projects/{projectId}
 POST /bid/projects/{projectId}/actions/submit-plan
-POST /bid/projects/{projectId}/actions/publish
-POST /bid/projects/{projectId}/actions/archive
-POST /bid/projects/{projectId}/actions/cancel
+POST /bid/projects/{projectId}/actions/publish-project
+POST /bid/projects/{projectId}/actions/archive-project
+POST /bid/projects/{projectId}/actions/cancel-project
 ```
 
 ## 2. 标段 `lots`
@@ -399,7 +399,7 @@ GET  /bid/lots/{lotId}
 POST /bid/lots
 PUT  /bid/lots/{lotId}
 POST /bid/lots/{lotId}/actions/close-bid
-POST /bid/lots/{lotId}/actions/void
+POST /bid/lots/{lotId}/actions/void-lot
 ```
 
 ## 3. 招标文件 `tenders`
@@ -418,8 +418,9 @@ POST /bid/tenders/{tenderId}/actions/withdraw
 
 ```text
 POST /bid/registrations/search
-POST /bid/registrations/{registrationId}/actions/approve
-POST /bid/registrations/{registrationId}/actions/reject
+POST /bid/registrations/{registrationId}/actions/approve-registration
+POST /bid/registrations/{registrationId}/actions/reject-registration
+POST /bid/registrations/{registrationId}/actions/cancel-registration
 
 POST /bid/submissions/search
 GET  /bid/submissions/{submissionId}
@@ -485,7 +486,7 @@ GET  /bid/portal/results/{lotId}
 后端菜单 `component` 必须严格匹配前端路径：
 
 - 内部主系统
-  - `src/views/bid/**/*`
+  - `src/views/system/bid/**/*`
 - 门户
   - 建议 `src/views/bid-portal/**/*` 或独立入口
 
@@ -517,6 +518,8 @@ GET  /bid/portal/results/{lotId}
 - 权限系统不变
 - 前端解包方式不变
 - 菜单路由装配方式不变
+
+当前已落地的 `/bid/project/**`、`/bid/lot/**`、`/bid/registration/**` 旧式接口按 ADR-004 保留为兼容适配层；新增模块不得继续扩展旧式 `add/update/queryPage` 端点。
 
 ## 实施要求
 

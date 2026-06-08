@@ -8,6 +8,8 @@
   - 一期采用三方协同 + 供应商门户轻量版
 - `ADR-003-workflow-and-api-contract.md`
   - 流程采用业务状态机，接口采用统一资源化契约
+- `ADR-004-bid-p0-implementation-baseline.md`
+  - 冻结招投标 P0 实施路径、兼容接口、数据库和菜单基线
 
 ## 后续建议补充
 

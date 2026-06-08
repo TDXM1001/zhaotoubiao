@@ -21,7 +21,9 @@ Accepted
 
 ## Decision
 
-继续采用现有单体后端 `sa-base + sa-admin` 和独立 Vue 管理端形态，在 `module/business` 下新增 `bid` 业务域。
+继续采用现有单体后端 `sa-base + sa-admin` 和独立 Vue 管理端形态，新增 `bid` 业务域。
+
+注：首批实现已按 `module/system/bid` 落地，业务域物理路径由 `ADR-004-bid-p0-implementation-baseline.md` 修订；本 ADR 的单体形态决策继续有效。
 
 ## Alternatives Considered
 
