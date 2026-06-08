@@ -15,6 +15,8 @@ import net.lab1024.sa.base.common.domain.PageResult;
 import net.lab1024.sa.base.common.domain.ResponseDTO;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 /**
  * 供应商报名 Controller
  *
@@ -35,10 +37,24 @@ public class BidRegistrationController {
         return ResponseDTO.ok(bidRegistrationService.queryPage(queryForm));
     }
 
+    @Operation(summary = "资源化分页查询供应商报名")
+    @PostMapping("/bid/registrations/search")
+    @SaCheckPermission("bid:registration:query")
+    public ResponseDTO<PageResult<BidRegistrationVO>> search(@RequestBody @Valid BidRegistrationQueryForm queryForm) {
+        return ResponseDTO.ok(bidRegistrationService.queryPage(queryForm));
+    }
+
     @Operation(summary = "查询供应商报名详情")
     @GetMapping("/bid/registration/get/{registrationId}")
     @SaCheckPermission("bid:registration:query")
     public ResponseDTO<BidRegistrationVO> getDetail(@PathVariable Long registrationId) {
+        return bidRegistrationService.getDetail(registrationId);
+    }
+
+    @Operation(summary = "资源化查询供应商报名详情")
+    @GetMapping("/bid/registrations/{registrationId}")
+    @SaCheckPermission("bid:registration:query")
+    public ResponseDTO<BidRegistrationVO> getResourceDetail(@PathVariable Long registrationId) {
         return bidRegistrationService.getDetail(registrationId);
     }
 
@@ -49,10 +65,28 @@ public class BidRegistrationController {
         return bidRegistrationService.add(addForm);
     }
 
+    @Operation(summary = "资源化新增供应商报名")
+    @PostMapping("/bid/registrations")
+    @SaCheckPermission("bid:registration:create")
+    public ResponseDTO<String> create(@RequestBody @Valid BidRegistrationAddForm addForm) {
+        return bidRegistrationService.add(addForm);
+    }
+
     @Operation(summary = "报名审核通过")
     @PostMapping("/bid/registration/approve")
     @SaCheckPermission("bid:registration:approve")
     public ResponseDTO<String> approve(@RequestBody @Valid BidRegistrationActionForm actionForm) {
+        return bidRegistrationService.approve(actionForm);
+    }
+
+    @Operation(summary = "资源化报名审核通过")
+    @PostMapping("/bid/registrations/{registrationId}/actions/approve-registration")
+    @SaCheckPermission("bid:registration:approve")
+    public ResponseDTO<String> approveResource(@PathVariable Long registrationId, @RequestBody @Valid BidRegistrationActionForm actionForm) {
+        ResponseDTO<String> checkResult = checkRegistrationId(registrationId, actionForm.getRegistrationId());
+        if (!checkResult.getOk()) {
+            return checkResult;
+        }
         return bidRegistrationService.approve(actionForm);
     }
 
@@ -63,10 +97,39 @@ public class BidRegistrationController {
         return bidRegistrationService.reject(actionForm);
     }
 
+    @Operation(summary = "资源化报名驳回")
+    @PostMapping("/bid/registrations/{registrationId}/actions/reject-registration")
+    @SaCheckPermission("bid:registration:reject")
+    public ResponseDTO<String> rejectResource(@PathVariable Long registrationId, @RequestBody @Valid BidRegistrationActionForm actionForm) {
+        ResponseDTO<String> checkResult = checkRegistrationId(registrationId, actionForm.getRegistrationId());
+        if (!checkResult.getOk()) {
+            return checkResult;
+        }
+        return bidRegistrationService.reject(actionForm);
+    }
+
     @Operation(summary = "取消报名")
     @PostMapping("/bid/registration/cancel")
     @SaCheckPermission("bid:registration:cancel")
     public ResponseDTO<String> cancel(@RequestBody @Valid BidRegistrationActionForm actionForm) {
         return bidRegistrationService.cancel(actionForm);
+    }
+
+    @Operation(summary = "资源化取消报名")
+    @PostMapping("/bid/registrations/{registrationId}/actions/cancel-registration")
+    @SaCheckPermission("bid:registration:cancel")
+    public ResponseDTO<String> cancelResource(@PathVariable Long registrationId, @RequestBody @Valid BidRegistrationActionForm actionForm) {
+        ResponseDTO<String> checkResult = checkRegistrationId(registrationId, actionForm.getRegistrationId());
+        if (!checkResult.getOk()) {
+            return checkResult;
+        }
+        return bidRegistrationService.cancel(actionForm);
+    }
+
+    private ResponseDTO<String> checkRegistrationId(Long pathRegistrationId, Long formRegistrationId) {
+        if (!Objects.equals(pathRegistrationId, formRegistrationId)) {
+            return ResponseDTO.userErrorParam("路径报名ID与表单报名ID不一致");
+        }
+        return ResponseDTO.ok();
     }
 }
