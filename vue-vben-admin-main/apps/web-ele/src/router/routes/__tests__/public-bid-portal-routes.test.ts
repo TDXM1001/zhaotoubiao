@@ -35,6 +35,7 @@ describe('public bid portal routes', () => {
       '/bid-portal/project/list',
       '/bid-portal/project/detail',
       '/bid-portal/submission/form',
+      '/bid-portal/lots/result',
     ]) {
       expect(findRouteByPath(routes, path)?.meta?.ignoreAccess).toBe(true);
     }

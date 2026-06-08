@@ -13,6 +13,9 @@ export const PROJECT_STATUS_OPTIONS: EnumProps[] = [
   { label: '草稿', tagType: 'info', value: 'DRAFT' },
   { label: '已提交计划', tagType: 'warning', value: 'PLANNED' },
   { label: '已发布', tagType: 'success', value: 'PUBLISHED' },
+  { label: '开标中', tagType: 'warning', value: 'OPENING_IN_PROGRESS' },
+  { label: '评标中', tagType: 'warning', value: 'EVALUATING' },
+  { label: '已定标', tagType: 'success', value: 'AWARDED' },
   { label: '已作废', tagType: 'danger', value: 'CANCELLED' },
   { label: '已归档', tagType: 'info', value: 'ARCHIVED' },
 ];
@@ -22,6 +25,9 @@ export const LOT_STATUS_OPTIONS: EnumProps[] = [
   { label: '草稿', tagType: 'info', value: 'DRAFT' },
   { label: '投标中', tagType: 'success', value: 'BIDDING' },
   { label: '已截标', tagType: 'warning', value: 'BID_CLOSED' },
+  { label: '已开标', tagType: 'primary', value: 'OPENED' },
+  { label: '评标中', tagType: 'warning', value: 'EVALUATING' },
+  { label: '已定标', tagType: 'success', value: 'AWARDED' },
   { label: '已废止', tagType: 'danger', value: 'VOIDED' },
 ];
 
@@ -47,6 +53,32 @@ export const SUBMISSION_STATUS_OPTIONS: EnumProps[] = [
   { label: '已投标', tagType: 'warning', value: 'SUBMITTED' },
   { label: '已撤回', tagType: 'info', value: 'WITHDRAWN' },
   { label: '已开标', tagType: 'primary', value: 'OPENED' },
+];
+
+/** 开标状态选项 */
+export const OPENING_STATUS_OPTIONS: EnumProps[] = [
+  { label: '待开标', tagType: 'info', value: 'PENDING' },
+  { label: '开标中', tagType: 'warning', value: 'IN_PROGRESS' },
+  { label: '已完成', tagType: 'success', value: 'COMPLETED' },
+  { label: '异常关闭', tagType: 'danger', value: 'ABNORMAL_CLOSED' },
+];
+
+/** 评标状态选项 */
+export const EVALUATION_STATUS_OPTIONS: EnumProps[] = [
+  { label: '待评标', tagType: 'info', value: 'PENDING' },
+  { label: '评分中', tagType: 'warning', value: 'SCORING' },
+  { label: '汇总中', tagType: 'warning', value: 'SUMMARIZING' },
+  { label: '已定稿', tagType: 'success', value: 'FINALIZED' },
+  { label: '已回退', tagType: 'danger', value: 'ROLLED_BACK' },
+];
+
+/** 定标状态选项 */
+export const AWARD_STATUS_OPTIONS: EnumProps[] = [
+  { label: '待定标', tagType: 'info', value: 'PENDING' },
+  { label: '确认中', tagType: 'warning', value: 'REVIEWING' },
+  { label: '已确认', tagType: 'success', value: 'CONFIRMED' },
+  { label: '已回退', tagType: 'danger', value: 'ROLLED_BACK' },
+  { label: '已取消', tagType: 'info', value: 'CANCELLED' },
 ];
 
 /** 招标文件版本类型选项 */
@@ -77,11 +109,24 @@ const STATUS_TYPE_MAP: Record<
   CANCELLED: 'danger',
   DRAFT: 'info',
   ACTIVE: 'success',
+  ABNORMAL_CLOSED: 'danger',
+  AWARDED: 'success',
   PLANNED: 'warning',
   PUBLISHED: 'success',
+  COMPLETED: 'success',
+  CONFIRMED: 'success',
+  EVALUATING: 'warning',
+  FINALIZED: 'success',
+  IN_PROGRESS: 'warning',
+  OPENING_IN_PROGRESS: 'warning',
+  PENDING: 'info',
   QUALIFIED: 'success',
   REJECTED: 'danger',
+  REVIEWING: 'warning',
+  ROLLED_BACK: 'danger',
+  SCORING: 'warning',
   SUBMITTED: 'warning',
+  SUMMARIZING: 'warning',
   SUPERSEDED: 'warning',
   WITHDRAWN: 'info',
   OPENED: 'primary',
@@ -128,6 +173,21 @@ export function getTenderStatusText(status?: string) {
 /** 获取投标状态文本 */
 export function getSubmissionStatusText(status?: string) {
   return getLabelFromOptions(SUBMISSION_STATUS_OPTIONS, status);
+}
+
+/** 获取开标状态文本 */
+export function getOpeningStatusText(status?: string) {
+  return getLabelFromOptions(OPENING_STATUS_OPTIONS, status);
+}
+
+/** 获取评标状态文本 */
+export function getEvaluationStatusText(status?: string) {
+  return getLabelFromOptions(EVALUATION_STATUS_OPTIONS, status);
+}
+
+/** 获取定标状态文本 */
+export function getAwardStatusText(status?: string) {
+  return getLabelFromOptions(AWARD_STATUS_OPTIONS, status);
 }
 
 /** 获取招标文件版本类型文本 */

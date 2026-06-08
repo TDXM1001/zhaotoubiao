@@ -402,4 +402,146 @@ describe('buildSmartAdminRoutes', () => {
       path: '/bid-portal/submission/form',
     });
   });
+
+  it('maps p2 bid opening evaluation and award menu paths to their routes', () => {
+    const routes = buildSmartAdminRoutes(
+      [
+        {
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 731,
+          menuName: '招投标管理',
+          menuType: 1,
+          parentId: 0,
+          sort: 1,
+          visibleFlag: true,
+        },
+        {
+          component: '/system/bid/opening/opening-list.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 779,
+          menuName: '开标管理',
+          menuType: 2,
+          parentId: 731,
+          path: '/system/bid/opening/list',
+          sort: 7,
+          visibleFlag: true,
+        },
+        {
+          component: '/system/bid/opening/opening-detail.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 781,
+          menuName: '开标详情',
+          menuType: 2,
+          parentId: 779,
+          path: '/system/bid/opening/detail',
+          sort: 12,
+          visibleFlag: false,
+        },
+        {
+          component: '/system/bid/evaluation/evaluation-list.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 787,
+          menuName: '评标管理',
+          menuType: 2,
+          parentId: 731,
+          path: '/system/bid/evaluation/list',
+          sort: 8,
+          visibleFlag: true,
+        },
+        {
+          component: '/system/bid/evaluation/evaluation-detail.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 789,
+          menuName: '评标详情',
+          menuType: 2,
+          parentId: 787,
+          path: '/system/bid/evaluation/detail',
+          sort: 12,
+          visibleFlag: false,
+        },
+        {
+          component: '/system/bid/award/award-list.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 795,
+          menuName: '定标管理',
+          menuType: 2,
+          parentId: 731,
+          path: '/system/bid/award/list',
+          sort: 9,
+          visibleFlag: true,
+        },
+        {
+          component: '/system/bid/award/award-detail.vue',
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 797,
+          menuName: '定标详情',
+          menuType: 2,
+          parentId: 795,
+          path: '/system/bid/award/detail',
+          sort: 12,
+          visibleFlag: false,
+        },
+      ],
+      new Set([
+        '/system/bid/award/award-detail.vue',
+        '/system/bid/award/award-list.vue',
+        '/system/bid/evaluation/evaluation-detail.vue',
+        '/system/bid/evaluation/evaluation-list.vue',
+        '/system/bid/opening/opening-detail.vue',
+        '/system/bid/opening/opening-list.vue',
+      ]),
+    );
+
+    expect(routes).toHaveLength(1);
+    expect(routes[0]?.children).toHaveLength(6);
+    const childRoutesByPath = new Map(
+      routes[0]?.children?.map((route) => [route.path, route]),
+    );
+
+    expect(childRoutesByPath.get('/system/bid/opening/list')).toMatchObject({
+      component: '/system/bid/opening/opening-list.vue',
+      path: '/system/bid/opening/list',
+    });
+    expect(childRoutesByPath.get('/system/bid/opening/detail')).toMatchObject({
+      component: '/system/bid/opening/opening-detail.vue',
+      meta: {
+        activePath: '/system/bid/opening/list',
+        hideInMenu: true,
+      },
+      path: '/system/bid/opening/detail',
+    });
+    expect(childRoutesByPath.get('/system/bid/evaluation/list')).toMatchObject({
+      component: '/system/bid/evaluation/evaluation-list.vue',
+      path: '/system/bid/evaluation/list',
+    });
+    expect(
+      childRoutesByPath.get('/system/bid/evaluation/detail'),
+    ).toMatchObject({
+      component: '/system/bid/evaluation/evaluation-detail.vue',
+      meta: {
+        activePath: '/system/bid/evaluation/list',
+        hideInMenu: true,
+      },
+      path: '/system/bid/evaluation/detail',
+    });
+    expect(childRoutesByPath.get('/system/bid/award/list')).toMatchObject({
+      component: '/system/bid/award/award-list.vue',
+      path: '/system/bid/award/list',
+    });
+    expect(childRoutesByPath.get('/system/bid/award/detail')).toMatchObject({
+      component: '/system/bid/award/award-detail.vue',
+      meta: {
+        activePath: '/system/bid/award/list',
+        hideInMenu: true,
+      },
+      path: '/system/bid/award/detail',
+    });
+  });
 });

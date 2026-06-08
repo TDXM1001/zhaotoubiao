@@ -49,6 +49,17 @@ const routes: RouteRecordRaw[] = [
         name: 'BidPortalSubmissionForm',
         path: 'submission/form',
       },
+      {
+        component: () => import('#/views/bid-portal/result/portal-result.vue'),
+        meta: {
+          activePath: '/bid-portal/project/list',
+          hideInMenu: true,
+          ignoreAccess: true,
+          title: '标段结果',
+        },
+        name: 'BidPortalResult',
+        path: 'lots/result',
+      },
     ],
   },
 ];

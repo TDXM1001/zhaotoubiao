@@ -240,6 +240,15 @@ export namespace SystemBidTenderApi {
     versionNo?: null | number;
   }
 
+  /** 招投标附件关联创建参数 */
+  export interface AttachmentCreateParams {
+    fileCategory: string;
+    fileId: number;
+    mainFlag?: boolean;
+    sortNo?: number;
+    versionNo?: null | number;
+  }
+
   /** 招标文件分页查询参数 */
   export interface TenderQueryParams {
     keyword?: string;
@@ -301,6 +310,8 @@ export namespace SystemBidTenderApi {
 
 export namespace SystemBidSubmissionApi {
   export type AttachmentItem = SystemBidTenderApi.AttachmentItem;
+  export type AttachmentCreateParams =
+    SystemBidTenderApi.AttachmentCreateParams;
 
   /** 投标分页查询参数 */
   export interface SubmissionQueryParams {
@@ -367,6 +378,200 @@ export namespace SystemBidSubmissionApi {
     version: number;
     withdrawReason?: string;
     withdrawTime?: string;
+  }
+}
+
+export namespace SystemBidOpeningApi {
+  /** 开标分页查询参数 */
+  export interface OpeningQueryParams {
+    keyword?: string;
+    lotId?: number;
+    pageNum: number;
+    pageSize: number;
+    projectId?: number;
+    searchCount?: boolean;
+    status?: string;
+  }
+
+  /** 开标动作参数 */
+  export interface OpeningActionParams {
+    openingId: number;
+    remark?: string;
+    version: number;
+  }
+
+  /** 开标创建参数 */
+  export interface OpeningCreateParams {
+    hostEmployeeId?: null | number;
+    lotId: number;
+    openingPlace?: string;
+    openingTime?: string;
+    projectId: number;
+    recorderEmployeeId?: null | number;
+    summary?: string;
+  }
+
+  /** 开标明细 */
+  export interface OpeningItemDetail {
+    createTime?: string;
+    documentCheckResult?: string;
+    openComment?: string;
+    openingId: number;
+    openingItemId: number;
+    quotedPrice?: null | number;
+    sortNo?: number;
+    submissionId: number;
+    submissionVersionId: number;
+    supplierCreditCode: string;
+    supplierEnterpriseId?: null | number;
+    supplierNameSnapshot: string;
+  }
+
+  /** 开标列表项 */
+  export interface OpeningItem {
+    abnormalFlag?: boolean;
+    abnormalReason?: string;
+    allowedActions?: string[];
+    createTime?: string;
+    hostEmployeeId?: null | number;
+    itemList?: OpeningItemDetail[];
+    lotCode?: string;
+    lotId: number;
+    lotName?: string;
+    openingId: number;
+    openingPlace?: string;
+    openingTime?: string;
+    projectId: number;
+    projectName?: string;
+    recorderEmployeeId?: null | number;
+    status: string;
+    summary?: string;
+    updateTime?: string;
+    version: number;
+  }
+}
+
+export namespace SystemBidEvaluationApi {
+  /** 评标分页查询参数 */
+  export interface EvaluationQueryParams {
+    keyword?: string;
+    lotId?: number;
+    openingId?: number;
+    pageNum: number;
+    pageSize: number;
+    projectId?: number;
+    searchCount?: boolean;
+    status?: string;
+  }
+
+  /** 评标动作参数 */
+  export interface EvaluationActionParams {
+    evaluationId: number;
+    remark?: string;
+    version: number;
+  }
+
+  /** 评标创建参数 */
+  export interface EvaluationCreateParams {
+    evaluationMode?: string;
+    finalSummary?: string;
+    lotId: number;
+    openingId?: null | number;
+    projectId: number;
+  }
+
+  /** 评标明细 */
+  export interface EvaluationItemDetail {
+    createTime?: string;
+    evaluationComment?: string;
+    evaluationId: number;
+    evaluationItemId: number;
+    openingItemId: number;
+    quotedPrice?: null | number;
+    rankingNo?: null | number;
+    recommendFlag?: boolean;
+    submissionId: number;
+    supplierNameSnapshot: string;
+    totalScore?: null | number;
+  }
+
+  /** 评标列表项 */
+  export interface EvaluationItem {
+    allowedActions?: string[];
+    createTime?: string;
+    evaluationId: number;
+    evaluationMode?: string;
+    finalSummary?: string;
+    finalizeTime?: string;
+    itemList?: EvaluationItemDetail[];
+    lotCode?: string;
+    lotId: number;
+    lotName?: string;
+    openingId: number;
+    projectId: number;
+    projectName?: string;
+    rollbackReason?: string;
+    startTime?: string;
+    status: string;
+    updateTime?: string;
+    version: number;
+  }
+}
+
+export namespace SystemBidAwardApi {
+  /** 定标分页查询参数 */
+  export interface AwardQueryParams {
+    evaluationId?: number;
+    keyword?: string;
+    lotId?: number;
+    pageNum: number;
+    pageSize: number;
+    projectId?: number;
+    searchCount?: boolean;
+    status?: string;
+  }
+
+  /** 定标动作参数 */
+  export interface AwardActionParams {
+    awardId: number;
+    remark?: string;
+    version: number;
+  }
+
+  /** 定标创建参数 */
+  export interface AwardCreateParams {
+    awardAmount?: null | number;
+    evaluationId: number;
+    lotId: number;
+    projectId: number;
+    remark?: string;
+    winningSubmissionId: number;
+  }
+
+  /** 定标列表项 */
+  export interface AwardItem {
+    allowedActions?: string[];
+    awardAmount?: null | number;
+    awardId: number;
+    confirmTime?: string;
+    confirmUserId?: null | number;
+    createTime?: string;
+    evaluationId: number;
+    lotCode?: string;
+    lotId: number;
+    lotName?: string;
+    projectId: number;
+    projectName?: string;
+    publicNoticeTime?: string;
+    remark?: string;
+    rollbackReason?: string;
+    status: string;
+    updateTime?: string;
+    version: number;
+    winnerCreditCode: string;
+    winnerEnterpriseId?: null | number;
+    winnerNameSnapshot: string;
+    winningSubmissionId: number;
   }
 }
 
@@ -514,6 +719,21 @@ export namespace SystemBidPortalApi {
     supplierNameSnapshot: string;
     version: number;
     withdrawReason?: string;
+  }
+
+  /** 门户标段结果 */
+  export interface PortalResultItem {
+    awardAmount?: null | number;
+    awardStatus?: string;
+    lotCode?: string;
+    lotId: number;
+    lotName?: string;
+    message?: string;
+    projectId: number;
+    projectName?: string;
+    publicNoticeTime?: string;
+    resultVisible?: boolean;
+    winnerFlag?: boolean;
   }
 }
 
@@ -733,6 +953,17 @@ export async function withdrawBidTenderApi(
   );
 }
 
+/** 关联招标文件附件 */
+export async function createBidTenderAttachmentApi(
+  tenderVersionId: number | string,
+  data: SystemBidTenderApi.AttachmentCreateParams,
+) {
+  return requestClient.post<string>(
+    `/bid/tenders/${tenderVersionId}/attachments`,
+    data,
+  );
+}
+
 /** 查询投标分页 */
 export async function queryBidSubmissionPageApi(
   data: SystemBidSubmissionApi.SubmissionQueryParams,
@@ -781,6 +1012,197 @@ export async function withdrawBidSubmissionApi(
 ) {
   return requestClient.post<string>(
     `/bid/submissions/${data.submissionId}/actions/withdraw-bid`,
+    data,
+  );
+}
+
+/** 关联投标附件 */
+export async function createBidSubmissionAttachmentApi(
+  submissionId: number | string,
+  data: SystemBidSubmissionApi.AttachmentCreateParams,
+) {
+  return requestClient.post<string>(
+    `/bid/submissions/${submissionId}/attachments`,
+    data,
+  );
+}
+
+/** 查询开标分页 */
+export async function queryBidOpeningPageApi(
+  data: SystemBidOpeningApi.OpeningQueryParams,
+) {
+  return requestClient.post<
+    SystemBidProjectApi.PageResult<SystemBidOpeningApi.OpeningItem>
+  >('/bid/openings/search', data);
+}
+
+/** 查询开标详情 */
+export async function getBidOpeningDetailApi(openingId: number | string) {
+  return requestClient.get<SystemBidOpeningApi.OpeningItem>(
+    `/bid/openings/${openingId}`,
+  );
+}
+
+/** 查询标段开标记录 */
+export async function getBidOpeningByLotIdApi(lotId: number | string) {
+  return requestClient.get<SystemBidOpeningApi.OpeningItem>(
+    `/bid/lots/${lotId}/opening`,
+  );
+}
+
+/** 新增开标记录 */
+export async function addBidOpeningApi(
+  data: SystemBidOpeningApi.OpeningCreateParams,
+) {
+  return requestClient.post<string>('/bid/openings', data);
+}
+
+/** 开始开标 */
+export async function startBidOpeningApi(
+  data: SystemBidOpeningApi.OpeningActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/openings/${data.openingId}/actions/start-opening`,
+    data,
+  );
+}
+
+/** 完成开标 */
+export async function completeBidOpeningApi(
+  data: SystemBidOpeningApi.OpeningActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/openings/${data.openingId}/actions/complete-opening`,
+    data,
+  );
+}
+
+/** 异常关闭开标 */
+export async function abnormalCloseBidOpeningApi(
+  data: SystemBidOpeningApi.OpeningActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/openings/${data.openingId}/actions/abnormal-close-opening`,
+    data,
+  );
+}
+
+/** 查询评标分页 */
+export async function queryBidEvaluationPageApi(
+  data: SystemBidEvaluationApi.EvaluationQueryParams,
+) {
+  return requestClient.post<
+    SystemBidProjectApi.PageResult<SystemBidEvaluationApi.EvaluationItem>
+  >('/bid/evaluations/search', data);
+}
+
+/** 查询评标详情 */
+export async function getBidEvaluationDetailApi(evaluationId: number | string) {
+  return requestClient.get<SystemBidEvaluationApi.EvaluationItem>(
+    `/bid/evaluations/${evaluationId}`,
+  );
+}
+
+/** 查询标段评标记录 */
+export async function getBidEvaluationByLotIdApi(lotId: number | string) {
+  return requestClient.get<SystemBidEvaluationApi.EvaluationItem>(
+    `/bid/lots/${lotId}/evaluation`,
+  );
+}
+
+/** 新增评标记录 */
+export async function addBidEvaluationApi(
+  data: SystemBidEvaluationApi.EvaluationCreateParams,
+) {
+  return requestClient.post<string>('/bid/evaluations', data);
+}
+
+/** 开始评标 */
+export async function startBidEvaluationApi(
+  data: SystemBidEvaluationApi.EvaluationActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/evaluations/${data.evaluationId}/actions/start-evaluation`,
+    data,
+  );
+}
+
+/** 评标定稿 */
+export async function finalizeBidEvaluationApi(
+  data: SystemBidEvaluationApi.EvaluationActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/evaluations/${data.evaluationId}/actions/finalize-evaluation`,
+    data,
+  );
+}
+
+/** 回退评标 */
+export async function rollbackBidEvaluationApi(
+  data: SystemBidEvaluationApi.EvaluationActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/evaluations/${data.evaluationId}/actions/rollback-evaluation`,
+    data,
+  );
+}
+
+/** 查询定标分页 */
+export async function queryBidAwardPageApi(
+  data: SystemBidAwardApi.AwardQueryParams,
+) {
+  return requestClient.post<
+    SystemBidProjectApi.PageResult<SystemBidAwardApi.AwardItem>
+  >('/bid/awards/search', data);
+}
+
+/** 查询定标详情 */
+export async function getBidAwardDetailApi(awardId: number | string) {
+  return requestClient.get<SystemBidAwardApi.AwardItem>(
+    `/bid/awards/${awardId}`,
+  );
+}
+
+/** 查询标段定标记录 */
+export async function getBidAwardByLotIdApi(lotId: number | string) {
+  return requestClient.get<SystemBidAwardApi.AwardItem>(
+    `/bid/lots/${lotId}/award`,
+  );
+}
+
+/** 新增定标记录 */
+export async function addBidAwardApi(
+  data: SystemBidAwardApi.AwardCreateParams,
+) {
+  return requestClient.post<string>('/bid/awards', data);
+}
+
+/** 确认定标 */
+export async function confirmBidAwardApi(
+  data: SystemBidAwardApi.AwardActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/awards/${data.awardId}/actions/confirm-award`,
+    data,
+  );
+}
+
+/** 回退定标 */
+export async function rollbackBidAwardApi(
+  data: SystemBidAwardApi.AwardActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/awards/${data.awardId}/actions/rollback-award`,
+    data,
+  );
+}
+
+/** 取消定标 */
+export async function cancelBidAwardApi(
+  data: SystemBidAwardApi.AwardActionParams,
+) {
+  return requestClient.post<string>(
+    `/bid/awards/${data.awardId}/actions/cancel-award`,
     data,
   );
 }
@@ -894,5 +1316,12 @@ export async function withdrawBidPortalSubmissionApi(
   return requestClient.post<string>(
     `/bid/portal/submissions/${data.submissionId}/actions/withdraw-bid`,
     data,
+  );
+}
+
+/** 门户查询本人标段结果 */
+export async function getBidPortalLotResultApi(lotId: number | string) {
+  return requestClient.get<SystemBidPortalApi.PortalResultItem>(
+    `/bid/portal/lots/${lotId}/result`,
   );
 }
