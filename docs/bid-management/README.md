@@ -49,6 +49,9 @@
 - `p1-mvp1-next-step-design.md`
   - P1 MVP-1 下一步设计
   - 基于 P0 已实现项目、标段、报名主线，冻结招标文件、投标提交、附件版本、门户基础和多 agent 分工
+- `p1-closeout-and-p2-next-step-design.md`
+  - P1 收口与 P2 下一步设计
+  - 基于当前代码完成面，定义 P1 验收收口、P2 开标 / 评标 / 定标最小切片和多 agent 分工
 
 ## 决策记录
 
@@ -60,6 +63,8 @@
   - 流程采用业务状态机，接口采用统一资源化契约
 - `../decisions/ADR-004-bid-p0-implementation-baseline.md`
   - 冻结招投标 P0 实施路径、兼容接口、数据库和菜单基线
+- `../decisions/ADR-005-bid-p1-closeout-and-p2-entry-baseline.md`
+  - 提出 P1 收口准入与 P2 最小开评定标进入基线
 
 ## 一期范围摘要
 
@@ -91,4 +96,4 @@
 8. 然后看 `module-design.md`
 9. 再看 `implementation-roadmap.md`
 10. 再看 `p0-implementation-baseline.md` 和 `../decisions/`
-11. 最后看 `p1-mvp1-next-step-design.md`
+11. 最后看 `p1-mvp1-next-step-design.md` 和 `p1-closeout-and-p2-next-step-design.md`
