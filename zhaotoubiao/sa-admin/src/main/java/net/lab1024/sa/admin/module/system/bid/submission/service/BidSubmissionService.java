@@ -175,7 +175,7 @@ public class BidSubmissionService {
 
         bidWorkflowHistoryService.recordSubmissionAction(entity.getSubmissionId(), entity.getProjectId(), entity.getLotId(),
                 null, entity.getStatus(), "create-submission", "新增投标主记录", SmartRequestUtil.getRequestUser(), entity);
-        return ResponseDTO.ok();
+        return ResponseDTO.ok(String.valueOf(entity.getSubmissionId()));
     }
 
     /**

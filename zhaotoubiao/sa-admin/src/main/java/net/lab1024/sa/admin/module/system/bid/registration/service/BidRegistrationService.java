@@ -103,7 +103,7 @@ public class BidRegistrationService {
 
         bidWorkflowHistoryService.recordRegistrationAction(entity.getRegistrationId(), entity.getProjectId(), entity.getLotId(),
                 null, entity.getStatus(), "create-registration", "新增供应商报名", SmartRequestUtil.getRequestUser(), entity);
-        return ResponseDTO.ok();
+        return ResponseDTO.ok(String.valueOf(entity.getRegistrationId()));
     }
 
     /**

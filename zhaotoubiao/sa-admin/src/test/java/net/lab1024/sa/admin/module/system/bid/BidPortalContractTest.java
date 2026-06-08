@@ -2,6 +2,9 @@ package net.lab1024.sa.admin.module.system.bid;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import jakarta.validation.constraints.NotBlank;
+import net.lab1024.sa.admin.config.MvcConfig;
+import net.lab1024.sa.admin.interceptor.AdminInterceptor;
+import net.lab1024.sa.admin.interceptor.BidPortalInterceptor;
 import net.lab1024.sa.admin.module.system.bid.portal.controller.BidPortalController;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.form.BidPortalRegistrationCreateForm;
 import net.lab1024.sa.admin.module.system.bid.portal.domain.form.BidPortalSubmissionActionForm;
@@ -13,10 +16,14 @@ import net.lab1024.sa.admin.module.system.bid.portal.domain.vo.BidPortalSubmissi
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.handler.MappedInterceptor;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -67,6 +74,26 @@ class BidPortalContractTest {
         assertNoNotBlank(BidPortalSubmissionActionForm.class, "supplierCreditCode");
     }
 
+    @Test
+    void 门户结果接口必须挂载门户登录拦截器() throws IllegalAccessException, NoSuchFieldException {
+        MvcConfig mvcConfig = new MvcConfig();
+        BidPortalInterceptor bidPortalInterceptor = new BidPortalInterceptor();
+        setField(mvcConfig, "adminInterceptor", new AdminInterceptor());
+        setField(mvcConfig, "bidPortalInterceptor", bidPortalInterceptor);
+
+        TestInterceptorRegistry registry = new TestInterceptorRegistry();
+        mvcConfig.addInterceptors(registry);
+
+        boolean containsLotResultPattern = registry.interceptors().stream()
+                .filter(MappedInterceptor.class::isInstance)
+                .map(MappedInterceptor.class::cast)
+                .filter(mappedInterceptor -> mappedInterceptor.getInterceptor() == bidPortalInterceptor)
+                .flatMap(mappedInterceptor -> Arrays.stream(mappedInterceptor.getIncludePathPatterns()))
+                .anyMatch("/bid/portal/lots/**"::equals);
+
+        assertTrue(containsLotResultPattern, "门户结果接口需要门户登录上下文，避免被误判为未登录");
+    }
+
     private void assertNoAllowedActions(Class<?> voClass) {
         assertFalse(Arrays.stream(voClass.getDeclaredFields())
                 .anyMatch(field -> "allowedActions".equals(field.getName())));
@@ -99,5 +126,18 @@ class BidPortalContractTest {
             return Arrays.asList(postMapping.value()).contains(path) || Arrays.asList(postMapping.path()).contains(path);
         }
         return false;
+    }
+
+    private void setField(Object target, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private static final class TestInterceptorRegistry extends InterceptorRegistry {
+
+        private List<Object> interceptors() {
+            return getInterceptors();
+        }
     }
 }

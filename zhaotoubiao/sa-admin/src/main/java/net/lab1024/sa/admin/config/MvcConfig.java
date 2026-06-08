@@ -42,7 +42,8 @@ public class MvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/bid/portal/registrations")
                 .addPathPatterns("/bid/portal/registrations/**")
                 .addPathPatterns("/bid/portal/submissions")
-                .addPathPatterns("/bid/portal/submissions/**");
+                .addPathPatterns("/bid/portal/submissions/**")
+                .addPathPatterns("/bid/portal/lots/**");
     }
 
     @Override
