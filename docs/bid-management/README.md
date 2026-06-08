@@ -46,6 +46,9 @@
 - `p0-implementation-baseline.md`
   - P0 实施基线
   - 冻结当前实现路径、API 兼容策略、数据库顺序、状态动作矩阵和验收命令
+- `p1-mvp1-next-step-design.md`
+  - P1 MVP-1 下一步设计
+  - 基于 P0 已实现项目、标段、报名主线，冻结招标文件、投标提交、附件版本、门户基础和多 agent 分工
 
 ## 决策记录
 
@@ -87,4 +90,5 @@
 7. 再看 `api-contract.md`
 8. 然后看 `module-design.md`
 9. 再看 `implementation-roadmap.md`
-10. 最后看 `p0-implementation-baseline.md` 和 `../decisions/`
+10. 再看 `p0-implementation-baseline.md` 和 `../decisions/`
+11. 最后看 `p1-mvp1-next-step-design.md`
