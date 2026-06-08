@@ -89,10 +89,23 @@ function getMenuRoutePath(menu: SmartAdminMenuItem) {
   return menu.path?.trim() || createCatalogPath(menu.menuId);
 }
 
+function isSupplierPortalMenu(menu: SmartAdminMenuItem) {
+  const routePath = getMenuRoutePath(menu);
+  const componentPath = normalizeSmartAdminComponentPath(menu.component);
+
+  // 供应商门户已拆到独立前端应用，管理端动态菜单需要拒绝注入门户路由。
+  return (
+    routePath.startsWith('/bid-portal') ||
+    componentPath.startsWith('/bid-portal/')
+  );
+}
+
 function buildMenuTree(menuList: SmartAdminMenuItem[]) {
   const groupedChildren = new Map<string, SmartAdminMenuItem[]>();
   const normalizedMenuList = sortSmartAdminMenus(
-    menuList.filter((menu) => !isEnabledFlag(menu.disabledFlag)),
+    menuList.filter(
+      (menu) => !isEnabledFlag(menu.disabledFlag) && !isSupplierPortalMenu(menu),
+    ),
   ).map((menu) => ({ ...menu, children: [] as SmartAdminMenuItem[] }));
   const menuMap = new Map(
     normalizedMenuList.map((menu) => [String(menu.menuId), menu]),
@@ -250,6 +263,10 @@ function extractSmartAdminAccessCodes(menuList: SmartAdminMenuItem[]) {
   const codes = new Set<string>();
 
   for (const menu of menuList) {
+    if (isSupplierPortalMenu(menu)) {
+      continue;
+    }
+
     for (const code of [...splitPerms(menu.webPerms), ...splitPerms(menu.apiPerms)]) {
       codes.add(code);
     }

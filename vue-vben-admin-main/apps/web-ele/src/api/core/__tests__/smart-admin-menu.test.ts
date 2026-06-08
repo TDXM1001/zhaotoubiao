@@ -98,6 +98,37 @@ describe('extractSmartAdminAccessCodes', () => {
       'system:user:remove',
     ]);
   });
+
+  it('keeps supplier portal permission codes out of the admin app', () => {
+    expect(
+      extractSmartAdminAccessCodes([
+        {
+          cacheFlag: false,
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 10,
+          menuName: 'Portal',
+          menuType: 2,
+          parentId: 0,
+          path: '/bid-portal/project/list',
+          visibleFlag: true,
+          webPerms: 'bid:portal:project',
+        },
+        {
+          cacheFlag: false,
+          disabledFlag: false,
+          frameFlag: false,
+          menuId: 11,
+          menuName: 'Admin Bid',
+          menuType: 2,
+          parentId: 0,
+          path: '/system/bid/project/list',
+          visibleFlag: true,
+          webPerms: 'bid:project:query',
+        },
+      ]),
+    ).toEqual(['bid:project:query']);
+  });
 });
 
 describe('findSmartAdminHomePath', () => {
@@ -217,7 +248,7 @@ describe('buildSmartAdminRoutes', () => {
     });
   });
 
-  it('maps p1 bid tender submission and portal menu paths to their routes', () => {
+  it('maps p1 bid tender submission paths and filters supplier portal menus', () => {
     const routes = buildSmartAdminRoutes(
       [
         {
@@ -340,7 +371,7 @@ describe('buildSmartAdminRoutes', () => {
     );
 
     expect(routes).toHaveLength(1);
-    expect(routes[0]?.children).toHaveLength(8);
+    expect(routes[0]?.children).toHaveLength(5);
     const childRoutesByPath = new Map(
       routes[0]?.children?.map((route) => [route.path, route]),
     );
@@ -381,26 +412,9 @@ describe('buildSmartAdminRoutes', () => {
       },
       path: '/system/bid/submission/detail',
     });
-    expect(childRoutesByPath.get('/bid-portal/project/list')).toMatchObject({
-      component: '/bid-portal/project/portal-project-list.vue',
-      path: '/bid-portal/project/list',
-    });
-    expect(childRoutesByPath.get('/bid-portal/project/detail')).toMatchObject({
-      component: '/bid-portal/project/portal-project-detail.vue',
-      meta: {
-        activePath: '/bid-portal/project/list',
-        hideInMenu: true,
-      },
-      path: '/bid-portal/project/detail',
-    });
-    expect(childRoutesByPath.get('/bid-portal/submission/form')).toMatchObject({
-      component: '/bid-portal/submission/portal-submission-form.vue',
-      meta: {
-        activePath: '/bid-portal/project/list',
-        hideInMenu: true,
-      },
-      path: '/bid-portal/submission/form',
-    });
+    expect(childRoutesByPath.has('/bid-portal/project/list')).toBe(false);
+    expect(childRoutesByPath.has('/bid-portal/project/detail')).toBe(false);
+    expect(childRoutesByPath.has('/bid-portal/submission/form')).toBe(false);
   });
 
   it('maps p2 bid opening evaluation and award menu paths to their routes', () => {
